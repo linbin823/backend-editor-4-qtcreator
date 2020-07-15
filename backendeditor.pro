@@ -1,5 +1,7 @@
 DEFINES += BACKENDEDITOR_LIBRARY
 
+Qt += widgets
+
 # backendEditor files
 
 SOURCES += \
