@@ -153,7 +153,7 @@ jobs:
         message("::set-output name=qtc_output_directory::${qtc_output_directory}")
 
         file(MAKE_DIRECTORY qtcreator)
-
+        message("CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
         foreach(package qtcreator qtcreator_dev)
           file(DOWNLOAD
             "${qtc_base_url}/${qtc_platform}/${package}.7z" ./${package}.7z SHOW_PROGRESS)
