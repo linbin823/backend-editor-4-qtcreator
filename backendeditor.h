@@ -5,17 +5,17 @@
 
 #include <extensionsystem/iplugin.h>
 
-namespace backendEditor {
+namespace BackendEditor {
 namespace Internal {
 
-class backendEditorPlugin : public ExtensionSystem::IPlugin
+class BackendEditorPlugin : public ExtensionSystem::IPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtCreatorPlugin" FILE "backendEditor.json")
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtCreatorPlugin" FILE "BackendEditor.json")
 
 public:
-    backendEditorPlugin();
-    ~backendEditorPlugin() override;
+    BackendEditorPlugin();
+    ~BackendEditorPlugin() override;
 
     bool initialize(const QStringList &arguments, QString *errorString) override;
     void extensionsInitialized() override;
@@ -26,6 +26,6 @@ private:
 };
 
 } // namespace Internal
-} // namespace backendEditor
+} // namespace BackendEditor
 
 #endif // BACKENDEDITORPLUGIN_H

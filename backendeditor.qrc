@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assests/macos_touchbar_backendeditor.png</file>
+        <file>assests/macos_touchbar_backendeditor@2x.png</file>
+        <file>assests/mode_backendeditor.png</file>
+        <file>assests/mode_backendeditor@2x.png</file>
+        <file>assests/mode_backendeditor_mask.png</file>
+        <file>assests/mode_backendeditor_mask@2x.png</file>
+    </qresource>
+</RCC>

@@ -1,5 +1,6 @@
 #include "backendeditor.h"
 #include "backendeditorconstants.h"
+#include "modebackend.h"
 
 #include <coreplugin/icore.h>
 #include <coreplugin/icontext.h>
@@ -13,21 +14,21 @@
 #include <QMainWindow>
 #include <QMenu>
 
-namespace backendEditor {
+namespace BackendEditor {
 namespace Internal {
 
-backendEditorPlugin::backendEditorPlugin()
+BackendEditorPlugin::BackendEditorPlugin()
 {
     // Create your members
 }
 
-backendEditorPlugin::~backendEditorPlugin()
+BackendEditorPlugin::~BackendEditorPlugin()
 {
     // Unregister objects from the plugin manager's object pool
     // Delete members
 }
 
-bool backendEditorPlugin::initialize(const QStringList &arguments, QString *errorString)
+bool BackendEditorPlugin::initialize(const QStringList &arguments, QString *errorString)
 {
     // Register objects in the plugin manager's object pool
     // Load settings
@@ -39,28 +40,30 @@ bool backendEditorPlugin::initialize(const QStringList &arguments, QString *erro
     Q_UNUSED(arguments)
     Q_UNUSED(errorString)
 
-    auto action = new QAction(tr("backendEditor Action"), this);
-    Core::Command *cmd = Core::ActionManager::registerAction(action, Constants::ACTION_ID,
-                                                             Core::Context(Core::Constants::C_GLOBAL));
-    cmd->setDefaultKeySequence(QKeySequence(tr("Ctrl+Alt+Meta+A")));
-    connect(action, &QAction::triggered, this, &backendEditorPlugin::triggerAction);
+//    auto action = new QAction(tr("backendEditor Action"), this);
+//    Core::Command *cmd = Core::ActionManager::registerAction(action, Constants::ACTION_ID,
+//                                                             Core::Context(Core::Constants::C_GLOBAL));
+//    cmd->setDefaultKeySequence(QKeySequence(tr("Ctrl+Alt+Meta+A")));
+//    connect(action, &QAction::triggered, this, &backendEditorPlugin::triggerAction);
 
-    Core::ActionContainer *menu = Core::ActionManager::createMenu(Constants::MENU_ID);
-    menu->menu()->setTitle(tr("backendEditor"));
-    menu->addAction(cmd);
-    Core::ActionManager::actionContainer(Core::Constants::M_TOOLS)->addMenu(menu);
+//    Core::ActionContainer *menu = Core::ActionManager::createMenu(Constants::MENU_ID);
+//    menu->menu()->setTitle(tr("backendEditor"));
+//    menu->addAction(cmd);
+//    Core::ActionManager::actionContainer(Core::Constants::M_TOOLS)->addMenu(menu);
 
+    ModeBackend *pMode = new ModeBackend(this);
+    Q_UNUSED(pMode)
     return true;
 }
 
-void backendEditorPlugin::extensionsInitialized()
+void BackendEditorPlugin::extensionsInitialized()
 {
     // Retrieve objects from the plugin manager's object pool
     // In the extensionsInitialized function, a plugin can be sure that all
     // plugins that depend on it are completely initialized.
 }
 
-ExtensionSystem::IPlugin::ShutdownFlag backendEditorPlugin::aboutToShutdown()
+ExtensionSystem::IPlugin::ShutdownFlag BackendEditorPlugin::aboutToShutdown()
 {
     // Save settings
     // Disconnect from signals that are not needed during shutdown
@@ -68,7 +71,7 @@ ExtensionSystem::IPlugin::ShutdownFlag backendEditorPlugin::aboutToShutdown()
     return SynchronousShutdown;
 }
 
-void backendEditorPlugin::triggerAction()
+void BackendEditorPlugin::triggerAction()
 {
     QMessageBox::information(Core::ICore::mainWindow(),
                              tr("Action Triggered"),
@@ -76,4 +79,4 @@ void backendEditorPlugin::triggerAction()
 }
 
 } // namespace Internal
-} // namespace backendEditor
+} // namespace BackendEditor
