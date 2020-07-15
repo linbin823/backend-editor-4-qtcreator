@@ -146,6 +146,9 @@ jobs:
         endif()
 
         # Save the path for other steps
+        message("qtc_binary_name ${qtc_binary_name}")
+        message("qtc_output_directory ${qtc_output_directory}")
+        message("WORKING_DIRECTORY ${WORKING_DIRECTORY}") 
         message("::set-output name=qtc_binary_name::${qtc_binary_name}")
         message("::set-output name=qtc_output_directory::${qtc_output_directory}")
 
