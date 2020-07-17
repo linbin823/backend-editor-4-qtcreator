@@ -174,7 +174,7 @@ jobs:
         endif()
         if(EXISTS "$ENV{GITHUB_WORKSPACE}/qtcreator")
           message("EXISTS: $ENV{GITHUB_WORKSPACE}/qtcreator")
-        else
+        else()
           message("DOSEN'T EXISTS: $ENV{GITHUB_WORKSPACE}/qtcreator")
         endif()
         if(EXISTS "$ENV{GITHUB_WORKSPACE}/qtcreator")
