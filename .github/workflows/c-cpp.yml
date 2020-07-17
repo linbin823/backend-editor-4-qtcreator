@@ -7,7 +7,7 @@ on:
 env:
   QT_VERSION: 5.15.0
   QT_CREATOR_VERSION: 4.13.0-beta1
-  QT_CREATOR_SNAPSHOT: YES
+  QT_CREATOR_SNAPSHOT: 820
   PLUGIN_PRO: backendeditor.pro
   PLUGIN_NAME: backendEditor
 
@@ -117,6 +117,7 @@ jobs:
         if (qtc_snapshot)
           set(qtc_base_url "https://download.qt.io/snapshots/qtcreator/${CMAKE_MATCH_1}/$ENV{QT_CREATOR_VERSION}/installer_source/${qtc_snapshot}")
         endif()
+        message("qtc_base_url: ${qtc_base_url}")
         if ("${{ runner.os }}" STREQUAL "Windows")
           set(qtc_output_directory "qtcreator/lib/qtcreator/plugins")
           set(qtc_binary_name "$ENV{PLUGIN_NAME}4.dll")
@@ -135,9 +136,6 @@ jobs:
           set(qtc_platform "mac_x64")
         endif()
         # Save the path for other steps
-        message("qtc_binary_name ${qtc_binary_name}")
-        message("qtc_output_directory ${qtc_output_directory}")
-        message("CMAKE_SOURCE_DIR ${CMAKE_SOURCE_DIR}") 
         message("::set-output name=qtc_binary_name::${qtc_binary_name}")
         message("::set-output name=qtc_output_directory::${qtc_output_directory}")
         file(MAKE_DIRECTORY qtcreator)
@@ -177,11 +175,11 @@ jobs:
         else()
           message("DOSEN'T EXISTS: $ENV{GITHUB_WORKSPACE}/qtcreator")
         endif()
-        if(EXISTS "$ENV{GITHUB_WORKSPACE}/src")
-          message("EXISTS: $ENV{GITHUB_WORKSPACE}/src")
+        if(EXISTS "$ENV{GITHUB_WORKSPACE}/qtcreator/src")
+          message("EXISTS: $ENV{GITHUB_WORKSPACE}/qtcreator/src")
         endif()
-        if(EXISTS "$ENV{GITHUB_WORKSPACE}/src/qtcreatorplugin.pri")
-          message("EXISTS: $ENV{GITHUB_WORKSPACE}/src/qtcreatorplugin.pri")
+        if(EXISTS "$ENV{GITHUB_WORKSPACE}/src/qtcreator/qtcreatorplugin.pri")
+          message("EXISTS: $ENV{GITHUB_WORKSPACE}/src/qtcreator/qtcreatorplugin.pri")
         endif()
         file(TO_CMAKE_PATH "$ENV{GITHUB_WORKSPACE}/qtcreator" qtcreator_dir)
         execute_process(
