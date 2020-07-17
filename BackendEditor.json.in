@@ -1,0 +1,16 @@
+{
+    \"Name\" : \"BackendEditor\",
+    \"Version\" : \"$$QTCREATOR_VERSION\",
+    \"CompatVersion\" : \"$$QTCREATOR_COMPAT_VERSION\",
+    \"Experimental\" : true,
+    \"Vendor\" : \"Richard Lin\",
+    \"Copyright\" : \"(C) 2018 Richard Lin\",
+    \"License\" : [ \"Commercial Usage\",
+                  \"\",
+                  \"GNU General Public License Usage\"
+    ],
+    \"Category\" : \"Qt Creator\",
+    \"Description\" : \"A plugin for Qt Creator, edit tags & communication protocols or other backend configurable functions in a GUI in Qt Creator.\",
+    \"Url\" : \"https://github.com/linbin823/backend-editor-4-qtcreator\",
+    $$dependencyList
+}

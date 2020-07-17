@@ -6,7 +6,7 @@
 #include <extensionsystem/iplugin.h>
 
 namespace BackendEditor {
-namespace Internal {
+inline namespace Internal {
 
 class BackendEditorPlugin : public ExtensionSystem::IPlugin
 {

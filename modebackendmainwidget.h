@@ -5,7 +5,10 @@
 
 namespace Ui {
 class ModeBackendMainWidget;
-}
+}// namespace Ui
+
+namespace BackendEditor {
+namespace Internal {
 
 class ModeBackendMainWidget : public QDialog
 {
@@ -18,5 +21,8 @@ public:
 private:
     Ui::ModeBackendMainWidget *ui;
 };
+
+} // namespace Internal
+} // namespace BackendEditor
 
 #endif // MODEBACKENDMAINWIDGET_H

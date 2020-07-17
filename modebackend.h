@@ -5,8 +5,13 @@
 #include <QWidget>
 #include <coreplugin/imode.h>
 #include <texteditor/autocompleter.h>
-class ModeBackendMainWidget;
+
+
 namespace BackendEditor {
+namespace Internal {
+
+class ModeBackendMainWidget;
+
 class ModeBackend : public Core::IMode
 {
     Q_OBJECT
@@ -18,5 +23,8 @@ public:
 private:
     ModeBackendMainWidget *mainWidget;
 };
+
+} // namespace Internal
 } // namespace BackendEditor
+
 #endif // MODEBACKEND_H
