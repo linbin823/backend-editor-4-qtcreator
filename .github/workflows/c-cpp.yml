@@ -172,6 +172,12 @@ jobs:
             endif()
           endforeach()
         endif()
+        if(EXISTS "$ENV{GITHUB_WORKSPACE}/qtcreator/src")
+          message("EXISTS: $ENV{GITHUB_WORKSPACE}/qtcreator/src")
+        endif()
+        if(EXISTS "$ENV{GITHUB_WORKSPACE}/qtcreator/src/qtcreatorplugin.pri")
+          message("EXISTS: "$ENV{GITHUB_WORKSPACE}/qtcreator/src/qtcreatorplugin.pri")
+        endif()
         file(TO_CMAKE_PATH "$ENV{GITHUB_WORKSPACE}/qtcreator" qtcreator_dir)
         execute_process(
           COMMAND ${{ steps.qt.outputs.qt_dir }}/bin/qmake
