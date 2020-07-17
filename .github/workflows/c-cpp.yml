@@ -141,7 +141,6 @@ jobs:
         message("::set-output name=qtc_binary_name::${qtc_binary_name}")
         message("::set-output name=qtc_output_directory::${qtc_output_directory}")
         file(MAKE_DIRECTORY qtcreator)
-        message("CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
         foreach(package qtcreator qtcreator_dev)
           file(DOWNLOAD
             "${qtc_base_url}/${qtc_platform}/${package}.7z" ./${package}.7z SHOW_PROGRESS)
@@ -174,7 +173,6 @@ jobs:
           endforeach()
         endif()
         file(TO_CMAKE_PATH "$ENV{GITHUB_WORKSPACE}/qtcreator" qtcreator_dir)
-        message("qtcreator_dir: ${qtcreator_dir}")
         execute_process(
           COMMAND ${{ steps.qt.outputs.qt_dir }}/bin/qmake
             $ENV{PLUGIN_PRO}
