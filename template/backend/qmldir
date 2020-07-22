@@ -1,0 +1,2 @@
+singleton Tags 1.0 Tags.config.qml
+singleton Drivers 1.0 Drivers.config.qml
