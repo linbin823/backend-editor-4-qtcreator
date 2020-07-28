@@ -20,8 +20,8 @@ HEADERS += \
         modebackendmainwidget.h
 
 DISTFILES += \
-        .github/workflow/build_qmake.yml \
-        .github/workflow/README.md \
+        .github/workflows/c-cpp.yml \
+        .github/workflows/README.md \
         BackendEditor.json
 
 # Qt Creator linking
