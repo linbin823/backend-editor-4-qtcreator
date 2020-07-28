@@ -7,6 +7,7 @@ Qt += widgets
 SOURCES += \
         backendeditor.cpp \
         modebackend.cpp \
+        modebackendcreatewizard.cpp \
         modebackendmainwidget.cpp
 
 HEADERS += \
@@ -15,6 +16,7 @@ HEADERS += \
         backendeditorconstants.h \
         backendeditoricons.h \
         modebackend.h \
+        modebackendcreatewizard.h \
         modebackendmainwidget.h
 
 DISTFILES += \
@@ -54,10 +56,13 @@ QTC_LIB_DEPENDS += \
 
 QTC_PLUGIN_DEPENDS += \
     coreplugin \
-    projectexplorer
+    projectexplorer \
+    qtsupport
 
-QTC_PLUGIN_RECOMMENDS += \
-    # optional plugin dependencies. nothing here at this time
+QTC_PLUGIN_RECOMMENDS +=  \
+    CMakeProjectManager \
+    QmlProjectManager \
+    QmakeProjectManager
 
 ###### End _dependencies.pri contents ######
 
@@ -67,4 +72,5 @@ FORMS += \
     modebackendmainwidget.ui
 
 RESOURCES += \
-    backendeditor.qrc
+    backendeditor.qrc \
+    template.qrc

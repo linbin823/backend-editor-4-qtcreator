@@ -18,6 +18,9 @@ public:
     explicit ModeBackendMainWidget(QWidget *parent = nullptr);
     ~ModeBackendMainWidget();
 
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::ModeBackendMainWidget *ui;
 };
