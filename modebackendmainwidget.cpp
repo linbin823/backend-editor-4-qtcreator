@@ -18,10 +18,7 @@ ModeBackendMainWidget::~ModeBackendMainWidget()
     delete ui;
 }
 
-} // namespace Internal
-} // namespace BackendEditor
-
-void BackendEditor::Internal::ModeBackendMainWidget::on_pushButton_clicked()
+void ModeBackendMainWidget::on_pbCreateTemplate_clicked()
 {
     ProjectExplorer::BuildSystem* bs = ProjectExplorer::ProjectTree::currentBuildSystem();
     if(bs == nullptr) { return; }
@@ -29,3 +26,7 @@ void BackendEditor::Internal::ModeBackendMainWidget::on_pushButton_clicked()
     ModeBackendCreateWizard wizard(bs);
     wizard.exec();
 }
+
+
+} // namespace Internal
+} // namespace BackendEditor

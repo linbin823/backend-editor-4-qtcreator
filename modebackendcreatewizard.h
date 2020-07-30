@@ -2,6 +2,7 @@
 #define MODEBACKENDCREATEWIZARD_H
 
 #include <utils/fileutils.h>
+#include <utils/id.h>
 #include <utils/wizard.h>
 
 namespace ProjectExplorer { class BuildSystem; }
@@ -41,6 +42,7 @@ private:
 
     bool copy(const QFileInfo &src, const QFileInfo &dst, QStringList *addedFiles);
     void createBackendTemplateFiles();
+
     ProjectExplorer::BuildSystem *m_buildSystem;
     QString m_buildKey;
     QString m_directory;

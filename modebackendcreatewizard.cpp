@@ -16,6 +16,7 @@
 #include <qmlprojectmanager/qmlproject.h>
 
 #include <qmakeprojectmanager/qmakeprojectmanagerconstants.h>
+#include <qmakeprojectmanager/qmakenodes.h>
 
 #include <utils/infolabel.h>
 #include <utils/pathchooser.h>
@@ -23,6 +24,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QFormLayout>
 #include <QLabel>
@@ -52,9 +54,9 @@ CanNotCreateTemplatePage::CanNotCreateTemplatePage(ModeBackendCreateWizard *)
     auto layout = new QVBoxLayout(this);
     auto label = new QLabel(this);
     label->setWordWrap(true);
-    label->setText(tr("不支持的Project类型，或者找不到App Project。   "));
+    label->setText(tr("不支持的Project类型，或者找不到App Project。   ")); // TODO: 乱码
     layout->addWidget(label);
-    setTitle(tr("无法添加后台模板文件。   "));
+    setTitle(tr("无法添加后台模板文件。   ")); // TODO: 乱码
 }
 
 
@@ -188,20 +190,20 @@ void ChooseDirectoryPage::initializePage()
     const QString projectDir = bti.projectFilePath.toFileInfo().absolutePath();
 
     QString backendTemplateDir;
-    if (const ProjectNode *node = target->project()->findNodeForBuildKey(buildKey))
-        backendTemplateDir = node->data(BackendEditor::Constants::BackendTemplateDir).toString();
+//    if (const ProjectNode *node = target->project()->findNodeForBuildKey(buildKey))
+//        backendTemplateDir = node->data(BackendEditor::Constants::BackendTemplateDir).toString();
 
-    if (backendTemplateDir.isEmpty()) {
-        m_label->setText(tr("选择后台模板文件的路径：\n\n后台模板文件默认会拷贝到工程路径下的backend文件夹. "));
+//    if (backendTemplateDir.isEmpty()) {
+    m_label->setText(tr("选择后台模板文件的路径：\n\n后台模板文件默认会拷贝到工程路径下的backend文件夹. "));  // TODO: 乱码
 
-        m_backendTemplateDir->setPath(projectDir + "/backend");
-        connect(m_backendTemplateDir, &PathChooser::rawPathChanged,
-                this, &ChooseDirectoryPage::checkPackageSourceDir);
-    } else {
-        m_label->setText(tr("后台模板文件的路径会保存到工程文件的BACKEND_TEMPLATE_DIR变量中。  "));
-        m_backendTemplateDir->setPath(backendTemplateDir);
-        m_backendTemplateDir->setReadOnly(true);
-    }
+    m_backendTemplateDir->setPath(projectDir + "/backend");
+    connect(m_backendTemplateDir, &PathChooser::rawPathChanged,
+            this, &ChooseDirectoryPage::checkPackageSourceDir);
+//    } else {
+//        m_label->setText(tr("后台模板文件的路径会保存到工程文件的BACKEND_TEMPLATE_DIR变量中。  ")); // TODO: 乱码
+//        m_backendTemplateDir->setPath(backendTemplateDir);
+//        m_backendTemplateDir->setReadOnly(true);
+//    }
 
 
     m_wizard->setDirectory(m_backendTemplateDir->filePath().toString());
@@ -238,7 +240,6 @@ ModeBackendCreateWizard::ModeBackendCreateWizard(BuildSystem *buildSystem)
         addPage(new ChooseProFilePage(this));
         addPage(new ChooseDirectoryPage(this));
     }
-
 }
 
 QString ModeBackendCreateWizard::buildKey() const
@@ -258,53 +259,72 @@ void ModeBackendCreateWizard::setDirectory(const QString &directory)
 
 bool ModeBackendCreateWizard::copy(const QFileInfo &src, const QFileInfo &dst, QStringList * addedFiles)
 {
-    bool copyFile = true;
+    bool copyState_onetime = true;
     if (dst.exists()) {
         switch (m_copyState) {
-        case Ask:
-            {
-                int res = QMessageBox::question(this,
-                                                tr("覆盖 %1 文件").arg(dst.fileName()),
-                                                tr("覆盖已存在的 \"%1\"?")
-                                                    .arg(QDir(m_directory).relativeFilePath(dst.absoluteFilePath())),
-                                                QMessageBox::Yes | QMessageBox::YesToAll |
-                                                QMessageBox::No | QMessageBox::NoToAll |
-                                                QMessageBox::Cancel);
-                switch (res) {
-                case QMessageBox::YesToAll:
-                    m_copyState = OverwriteAll;
-                    break;
+        case Ask: {
+            int res = QMessageBox::question(this,
+                            tr("覆盖 %1 文件").arg(dst.fileName()),
+                            tr("覆盖已存在的 \"%1\"?")
+                                .arg(QDir(m_directory).relativeFilePath(dst.absoluteFilePath())),
+                            QMessageBox::Yes | QMessageBox::YesToAll |
+                            QMessageBox::No | QMessageBox::NoToAll |
+                            QMessageBox::Cancel);
 
-                case QMessageBox::Yes:
-                    break;
-
-                case QMessageBox::NoToAll:
-                    m_copyState = SkipAll;
-                    copyFile = false;
-                    break;
-
-                case QMessageBox::No:
-                    copyFile = false;
-                    break;
-                default:
-                    return false;
-                }
+            switch (res) {
+            case QMessageBox::YesToAll: {
+                m_copyState = OverwriteAll;
+                copyState_onetime = true;
+                break;
+            }
+            case QMessageBox::Yes: {
+                m_copyState = Ask;
+                copyState_onetime = true;
+                break;
+            }
+            case QMessageBox::NoToAll: {
+                m_copyState = SkipAll;
+                copyState_onetime = false;
+                break;
+            }
+            case QMessageBox::No: {
+                m_copyState = Ask;
+                copyState_onetime = false;
+                break;
+            }
+            default:
+                return false;
             }
             break;
-        case SkipAll:
-            copyFile = false;
-            break;
-        default:
+        }
+        case OverwriteAll:
+        case SkipAll: {
+            copyState_onetime = false;
             break;
         }
-        if (copyFile)
-            QFile::remove(dst.filePath());
+        default:
+            return false;
+        }
+
+        if (copyState_onetime) {
+            QString path = dst.filePath();
+            QFile file(path);
+            file.setPermissions(QFile::ReadOther | QFile::WriteOther);
+            bool ret = file.remove();
+            if (!ret) {
+                QMessageBox::warning(this, tr("文件替换失败！   "),
+                                           tr("无法删除\"%1\""),
+                                           tr("原因：%2")
+                                         .arg(dst.filePath()).arg(file.errorString()));
+                return false;
+            }
+        }
     }
 
     if (!dst.absoluteDir().exists())
         dst.absoluteDir().mkpath(dst.absolutePath());
 
-    if (copyFile && !QFile::copy(src.filePath(), dst.filePath())) {
+    if (copyState_onetime && !QFile::copy(src.filePath(), dst.filePath())) {
         QMessageBox::warning(this, tr("文件拷贝失败！   "),
                                    tr("无法复制，从\"%1\"   到   \"%2\"")
                                 .arg(src.filePath()).arg(dst.filePath()));
@@ -334,28 +354,38 @@ void ModeBackendCreateWizard::createBackendTemplateFiles()
         return;
     }
 
-    if (m_projectType == ProjectTypeQmake || m_projectType == ProjectTypeCmake) {
+    ProjectNode *node = target->project()->findNodeForBuildKey(m_buildKey);
+
+    if (m_projectType == ProjectTypeQmake) {
         QString backendTemplateDir;
-        ProjectNode *node = target->project()->findNodeForBuildKey(m_buildKey);
         if (node) {
             node->addFiles(addedFiles);
-            backendTemplateDir = node->data(BackendEditor::Constants::BackendTemplateDir).toString();
+//            backendTemplateDir = node->data(BackendEditor::Constants::BackendTemplateDir).toString();
+//            if (backendTemplateDir.isEmpty()) {
 
-            if (backendTemplateDir.isEmpty()) {
-                // and now time for some magic
-                const BuildTargetInfo bti = target->buildTarget(m_buildKey);
-                const QString value = "$$PWD/"
-                                      + bti.projectFilePath.toFileInfo().absoluteDir().relativeFilePath(m_directory);
-                bool result = node->setData(BackendEditor::Constants::BackendTemplateDir, value);
+            const BuildTargetInfo bti = target->buildTarget(m_buildKey);
+            const QString value = "$$PWD/"
+                                  + bti.projectFilePath.toFileInfo().absoluteDir().relativeFilePath(m_directory);
 
-                if (!result) {
-                    QMessageBox::warning(this,
-                                         tr("工程文件更新失败。   "),
-                                         tr("工程文件错误:\" %1\"。   ")
-                                             .arg(bti.projectFilePath.toUserOutput()));
-                }
+            // and now time for some magic
+            QString scope;
+            int flags = QmakeProjectManager::Internal::ProWriter::ReplaceValues;
+            bool result = false;
+            QmakeProjectManager::QmakeProFile *pro = dynamic_cast<QmakeProjectManager::QmakeProFileNode *>(node)->proFile();
+            if (pro) {
+                result = pro->setProVariable(BackendEditor::Constants::BackendTemplateDir,
+                                              QStringList(value), scope, flags);
             }
+            if (!result) {
+                QMessageBox::warning(this,
+                                     tr("工程文件更新失败。   "),
+                                     tr("工程文件错误:\" %1\"。   ")
+                                         .arg(bti.projectFilePath.toUserOutput()));
+            }
+//            }
         }
+    } else if (m_projectType == ProjectTypeCmake) {
+        // TODO: Prepare cmake file.
     } else if (m_projectType == ProjectTypeQMLProject) {
         // TODO: Prepare qmlproject file.
     } else {

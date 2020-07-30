@@ -19,7 +19,7 @@ public:
     ~ModeBackendMainWidget();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_pbCreateTemplate_clicked();
 
 private:
     Ui::ModeBackendMainWidget *ui;

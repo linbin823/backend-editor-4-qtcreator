@@ -35,8 +35,13 @@ message(IDE_SOURCE_TREE: $$IDE_SOURCE_TREE)
 ## Either set the IDE_BUILD_TREE when running qmake,
 ## or set the QTC_BUILD environment variable, to override the default setting
 isEmpty(IDE_BUILD_TREE): IDE_BUILD_TREE = $$(QTC_BUILD)
-isEmpty(IDE_BUILD_TREE): IDE_BUILD_TREE = "D:/QtGit/work/qt5.15_msvc2019_64bit/"
-message(IDE_BUILD_TREE: $$IDE_BUILD_TREE)
+isEmpty(IDE_BUILD_TREE):CONFIG(debug, debug|release) {
+    IDE_BUILD_TREE = "D:/QtGit/work/qt5.15_msvc2019_64bit_debug/"
+    message("Debug model, IDE_BUILD_TREE: "$$IDE_BUILD_TREE)
+}else {
+    IDE_BUILD_TREE = "D:/QtGit/work/qt5.15_msvc2019_64bit/"
+    message("Release model, IDE_BUILD_TREE: "$$IDE_BUILD_TREE)
+}
 
 ## uncomment to build plugin into user config directory
 ## <localappdata>/plugins/<ideversion>
@@ -57,12 +62,13 @@ QTC_LIB_DEPENDS += \
 QTC_PLUGIN_DEPENDS += \
     coreplugin \
     projectexplorer \
-    qtsupport
-
-QTC_PLUGIN_RECOMMENDS +=  \
+    qtsupport \
     CMakeProjectManager \
     QmlProjectManager \
     QmakeProjectManager
+
+QTC_PLUGIN_RECOMMENDS +=  \
+
 
 ###### End _dependencies.pri contents ######
 
