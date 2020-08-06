@@ -118,7 +118,7 @@ public slots:
     /*!
      * 显示管理页面
      */
-    virtual void showUI(bool show=true, QWidget* parent=0)=0;
+    virtual QWidget* showUI(bool show=true, QWidget* parent=0)=0;
 
 signals:
     void stateChanged(int);

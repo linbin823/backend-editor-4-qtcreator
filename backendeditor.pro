@@ -47,7 +47,7 @@ include(RTData/RTData.pri)
 include(DriverMgr/DriverMgr.pri)
 
 #Drivers plugins
-include(Drivers/Drivers.pri)
+#include(Drivers/Drivers.pri)
 
 # Qt Creator linking
 
