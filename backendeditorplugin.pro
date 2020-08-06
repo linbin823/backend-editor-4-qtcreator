@@ -9,7 +9,8 @@ SOURCES += \
         backendeditorfactory.cpp \
         backendeditormode.cpp \
         backendeditormodemainwidget.cpp \
-        backendeditorplugin.cpp
+        backendeditorplugin.cpp \
+        backendtagseditor.cpp
 
 HEADERS += \
         backendeditor_global.h \
@@ -19,35 +20,13 @@ HEADERS += \
         backendeditoricons.h \
         backendeditormode.h \
         backendeditormodemainwidget.h \
-        backendeditorplugin.h
+        backendeditorplugin.h \
+        backendtagseditor.h
 
 DISTFILES += \
         .github/workflows/c-cpp.yml \
         .github/workflows/README.md \
         BackendEditor.json
-
-FORMS += \
-    backendeditormodemainwidget.ui
-
-RESOURCES += \
-    backendeditor.qrc \
-    template.qrc
-
-##########ESSENTIAL MODULE
-#base library: load & save to xml or json
-include(3rd-party/loadSaveProcessor/src/loadsaveProcessor.pri)
-
-#base Interface:
-include(Interface/Interface.pri)
-
-#Data Manager module
-include(RTData/RTData.pri)
-
-#Drivers Manager module
-include(DriverMgr/DriverMgr.pri)
-
-#Drivers plugins
-include(Drivers/Drivers.pri)
 
 # Qt Creator linking
 
@@ -90,9 +69,7 @@ QTC_PLUGIN_DEPENDS += \
     qtsupport \
     CMakeProjectManager \
     QmlProjectManager \
-    QmakeProjectManager \
-    QmlJSEditor \
-    QmlDesigner
+    QmakeProjectManager
 
 QTC_PLUGIN_RECOMMENDS +=  \
 
@@ -100,3 +77,10 @@ QTC_PLUGIN_RECOMMENDS +=  \
 ###### End _dependencies.pri contents ######
 
 include($$IDE_SOURCE_TREE/src/qtcreatorplugin.pri)
+
+FORMS += \
+    backendeditormodemainwidget.ui
+
+RESOURCES += \
+    backendeditor.qrc \
+    template.qrc

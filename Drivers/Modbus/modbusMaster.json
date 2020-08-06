@@ -1,0 +1,16 @@
+{
+    "driverType" : "Modbus Master/Client",
+    "driverManufacturer" : "Modicon",
+<<<<<<< HEAD
+    "description" : "Modbus Serial Master \nModbus Tcp Client",
+    "lastModified"  : "2018.6",
+    "majorVersion"  : "0",
+    "minorVersion"  : "0",
+    "microVersion"  : "1"
+=======
+    "description" : "Modbus Serial Master \nModbus Tcp Client \nDate:2018.4",
+    "majorVersion" : "0",
+    "minorVersion" : "0",
+    "microVersion" : "2"
+>>>>>>> remotes/origin/master
+}

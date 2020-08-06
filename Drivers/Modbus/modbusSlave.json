@@ -1,0 +1,8 @@
+{
+    "driverType"   : "Modbus Slave/Server",
+    "driverManufacturer" : "Modicon",
+    "description"  : "Modbus Serial Slave \nModbus Tcp Server \nDate:2018.4",
+    "majorVersion" : "0",
+    "minorVersion" : "0",
+    "microVersion" : "1"
+}

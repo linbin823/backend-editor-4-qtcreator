@@ -6,6 +6,7 @@ import "qmlTagInterface"
 TagsMgr {
     Tag {
         tagName: "testListedTag1"
+        tagType: "Bool"
         TagAddress {
             driverName: "Sim"
             address: "C1"
