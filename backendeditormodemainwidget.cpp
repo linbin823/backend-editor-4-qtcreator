@@ -28,10 +28,10 @@ BackendEditorModeMainWidget::BackendEditorModeMainWidget(QWidget *parent) :
     setLayout(ui->formLayout);
 
     ui->driversConfigEditor->setLayout(ui->driversLayout);
-    ui->driversLayout->addWidget(RTData::Instance()->showUI());
+    ui->driversLayout->addWidget(DriverMgr::Instance()->showUI());
 
     ui->tagsConfigEditor->setLayout(ui->tagsLayout);
-    ui->tagsLayout->addWidget(DriverMgr::Instance()->showUI());
+    ui->tagsLayout->addWidget(RTData::Instance()->showUI());
 
     parseConfigFile();
 }
@@ -63,11 +63,11 @@ void BackendEditorModeMainWidget::parseConfigFile()
 
     QString backendTemplateDir;
     backendTemplateDir = projectDir + "/backend/";
-    ui->lbTemplatePath->setText("    \u540E\u7AEF\u6A21\u677F\u76EE\u5F55\u4F4D\u7F6E\uFF1A  " + projectDir);
+    ui->lbTemplatePath->setText("    后端模板文件夹所在位置：  " + projectDir);
 
     QUrl driversConfigFile = QUrl::fromLocalFile(projectDir + "Drivers.config.qml");
     _pDriversModel->setFileUrl(driversConfigFile);
-//    ModelNode* rootNode = _pDriversModel->
+    //    ModelNode* rootNode = _pDriversModel->
 }
 
 void BackendEditorModeMainWidget::on_pbCreateTemplate_clicked()

@@ -29,6 +29,7 @@ BackendEditorMode::BackendEditorMode(QObject *parent)
     connect(ProjectExplorer::SessionManager::instance(), &ProjectExplorer::SessionManager::projectAdded,
             this, [this]() {
                 setEnabled(ProjectExplorer::SessionManager::hasProjects());
+                mainWidget->parseConfigFile();
             });
     connect(ProjectExplorer::SessionManager::instance(), &ProjectExplorer::SessionManager::projectRemoved,
             this, [this]() {

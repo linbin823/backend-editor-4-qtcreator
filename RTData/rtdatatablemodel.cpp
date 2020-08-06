@@ -188,7 +188,7 @@ QVariant RTDataTableModel::columnName(int column)const{
     case ExtraInfo:
         return tr("备注 ");
     case SubSystemName:
-        return tr("子系统名称 ");
+        return tr("子系统名称.");
     case ProjectID:
         return tr("项目ID ");
     case ProjecttName:
@@ -212,9 +212,9 @@ QVariant RTDataTableModel::columnName(int column)const{
     case Offset:
         return tr("偏移 ");
     case Value:
-        return tr("值 ");
+        return tr("值.");
     case LastUpdateTimes:
-        return tr("最后更新时间 ");
+        return tr("最后更新时间.");
     }
     return QVariant();
 }
