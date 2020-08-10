@@ -1,6 +1,8 @@
 #include "insertdriver.h"
 #include "ui_insertdriver.h"
-#include "drivermgr.h"
+#include "../Interface/Drivers/drivermgr.h"
+#include "../Interface/Drivers/idriver.h"
+
 static QList<DriverInfo> info = QList<DriverInfo>();
 
 InsertDriver::InsertDriver(QWidget *parent) :
@@ -12,7 +14,7 @@ InsertDriver::InsertDriver(QWidget *parent) :
     //setWindowFlag( Qt::WindowStaysOnTopHint );
     setWindowTitle(tr("新增驱动"));
 
-    info = DriverMgr::Instance()->supportDriversInfo();
+    info = DriverConfigMgr::Instance()->supportDriversInfo();
     foreach (DriverInfo i, info) {
         ui->lwSupportedDriverInfo->addItem(i.driverType);
     }
@@ -36,7 +38,7 @@ void InsertDriver::on_pbAdd_clicked()
 {
     int row = ui->lwSupportedDriverInfo->currentIndex().row();
     if(row >=0 && row < info.size()){
-        DriverMgr::Instance()->insertDriver( _pos, info.at(row) );
+        DriverConfigMgr::Instance()->insertDriver( _pos, info.at(row) );
     }
     on_pbClose_clicked();
 }

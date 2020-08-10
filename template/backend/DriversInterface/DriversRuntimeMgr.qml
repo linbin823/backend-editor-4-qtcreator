@@ -1,7 +1,6 @@
-import QtQml 2.0
-import "../"
+import QtQuick 2.0
 
-QtObject {
+Item {
 
     property var availDriversType: ["SimDriver"]
 
@@ -19,10 +18,10 @@ QtObject {
     default property list<QtObject> _initiatedDrivers
 
 
-    function init() {
+    function init(tags) {
         for (var i = 0; i < _initiatedDrivers.length; i++) {
-            var addresses = Tags._getTagAddressesbyDriverName(_initiatedDrivers[i].driverName)
-            console.log("DriverMgr::init()  " + _initiatedDrivers[i].driverName + "'s addresses: " + addresses.length)
+            var addresses = tags._getTagAddressesbyDriverName(_initiatedDrivers[i].driverName)
+//            console.log("DriverMgr::init()  " + _initiatedDrivers[i].driverName + "'s addresses: " + addresses.length)
             _initiatedDrivers[i]._tagAddresses = addresses
             _initiatedDrivers[i].start();
         }

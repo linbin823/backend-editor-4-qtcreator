@@ -1,8 +1,9 @@
-﻿#ifndef IALARMDATA_H
+#ifndef IALARMDATA_H
 #define IALARMDATA_H
 #include <QObject>
 #include <QColor>
-#include "../RTData/irtdata.h"
+#include "../Tags/tagmgr.h"
+#include "../Tags/tag.h"
 #include "ialarmtaginfo.h"
 #include "iloadsave.h"
 

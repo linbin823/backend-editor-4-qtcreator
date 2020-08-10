@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DriverUI</class>
- <widget class="QWidget" name="DriverUI">
+ <class>DriverConfigUI</class>
+ <widget class="QWidget" name="DriverConfigUI">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -35,14 +35,7 @@
     <property name="bottomMargin">
      <number>10</number>
     </property>
-    <item row="0" column="1">
-     <widget class="QPushButton" name="pbDelete">
-      <property name="text">
-       <string>删除</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="6">
+    <item row="2" column="0" colspan="4">
      <spacer name="horizontalSpacer">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -55,17 +48,10 @@
       </property>
      </spacer>
     </item>
-    <item row="1" column="0" colspan="7">
-     <widget class="QTableView" name="tvDrivers">
-      <property name="sortingEnabled">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="6">
-     <widget class="QPushButton" name="pbClose">
+    <item row="0" column="1">
+     <widget class="QPushButton" name="pbDelete">
       <property name="text">
-       <string>关闭</string>
+       <string>删除</string>
       </property>
      </widget>
     </item>
@@ -73,6 +59,20 @@
      <widget class="QPushButton" name="pbAdd">
       <property name="text">
        <string>添加</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="4">
+     <widget class="QPushButton" name="pbSave">
+      <property name="text">
+       <string>保存</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="5">
+     <widget class="QTableView" name="tvDrivers">
+      <property name="sortingEnabled">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -88,34 +88,6 @@
        </size>
       </property>
      </spacer>
-    </item>
-    <item row="0" column="6">
-     <widget class="QPushButton" name="pbAllStop">
-      <property name="text">
-       <string>全部停止</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="5">
-     <widget class="QPushButton" name="pbAllStart">
-      <property name="text">
-       <string>全部启动</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="4">
-     <widget class="QPushButton" name="pbStop">
-      <property name="text">
-       <string>停止</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="3">
-     <widget class="QPushButton" name="pbStart">
-      <property name="text">
-       <string>启动</string>
-      </property>
-     </widget>
     </item>
    </layout>
   </widget>

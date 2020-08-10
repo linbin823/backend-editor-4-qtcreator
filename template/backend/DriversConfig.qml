@@ -1,10 +1,12 @@
 pragma Singleton
+import QtQml 2.0
 import QtQuick 2.0
-import "qmlTagInterface"
-import "qmlDriverInterface"
-import "simDriver"
+import "TagsInterface"
+import "DriversInterface"
 
-DriversMgr {
+import "SimDriverRuntime"
+
+DriversRuntimeMgr {
 
     SimDriver {
         driverName: "Sim"

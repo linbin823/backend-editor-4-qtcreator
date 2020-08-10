@@ -1,9 +1,9 @@
 #ifndef IGLOBAL_H
 #define IGLOBAL_H
 
-#include "RTData/irtdata.h"
 #include "AlarmData/ialarmdata.h"
-#include "Drivers/idrivermgr.h"
+#include "Drivers/drivermgr.h"
+#include "Tags/tagmgr.h"
 
 class iGlobal{
 
@@ -11,8 +11,9 @@ public:
     explicit iGlobal(){}
     virtual ~iGlobal(){}
 
-    virtual iRTData* RTData()const=0;
-    virtual iDriverMgr* DriverMgr()const=0;
+    virtual TagMgr* tagMgr()const = 0;
+    virtual iDriverRuntimeMgr* driverRuntimeMgr()const = 0;
+    virtual DriverConfigMgr* driverConfigMgr()const = 0;
 
 #ifdef APPSERVER_WITH_ALARMDATA
     virtual iAlarmData* AlarmData()const=0;

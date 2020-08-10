@@ -31,7 +31,7 @@ FORMS += \
 
 RESOURCES += \
     backendeditor.qrc \
-    template.qrc
+    template/template.qrc
 
 ##########ESSENTIAL MODULE
 #base library: load & save to xml or json
@@ -41,7 +41,7 @@ include(3rd-party/loadSaveProcessor/src/loadsaveProcessor.pri)
 include(Interface/Interface.pri)
 
 #Data Manager module
-include(RTData/RTData.pri)
+include(Tags/Tags.pri)
 
 #Drivers Manager module
 include(DriverMgr/DriverMgr.pri)

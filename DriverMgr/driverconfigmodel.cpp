@@ -1,17 +1,18 @@
-#include "drivermodel.h"
-#include "drivermgr.h"
+#include "driverconfigmodel.h"
 #include "insertdriver.h"
+#include "../Interface/Drivers/drivermgr.h"
+#include "../Interface/Drivers/idriver.h"
 
-static DriverMgr* _pMgr=nullptr;
+static DriverConfigMgr* _pMgr=nullptr;
 static InsertDriver* _pInserter=nullptr;
 
-DriverModel::DriverModel(QObject *parent)
+DriverConfigModel::DriverConfigModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
-    _pMgr = DriverMgr::Instance();
+    _pMgr = DriverConfigMgr::Instance();
 }
 
-QVariant DriverModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant DriverConfigModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if(role == Qt::TextAlignmentRole){
         return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
@@ -21,10 +22,8 @@ QVariant DriverModel::headerData(int section, Qt::Orientation orientation, int r
             case 0:
                 return tr("名称.");
             case 1:
-                return tr("状态.");
-            case 2:
                 return tr("类型.");
-            case 3:
+            case 2:
                 return tr("配置.");
             }
         }else{
@@ -34,26 +33,26 @@ QVariant DriverModel::headerData(int section, Qt::Orientation orientation, int r
     return QVariant();
 }
 
-int DriverModel::rowCount(const QModelIndex &parent) const
+int DriverConfigModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
-    return _pMgr->allDrivers().size();
+    return _pMgr->driverList().size();
 }
 
-int DriverModel::columnCount(const QModelIndex &parent) const
+int DriverConfigModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
     return 4;
 }
 
-QVariant DriverModel::data(const QModelIndex &index, int role) const
+QVariant DriverConfigModel::data(const QModelIndex &index, int role) const
 {
     if(!index.isValid()){
         return QVariant();
     }
-    if(index.row()<0 || index.row()>=_pMgr->allDrivers().size() ) return QVariant();
+    if(index.row()<0 || index.row()>=_pMgr->driverList().size() ) return QVariant();
     if(role == Qt::BackgroundRole){
         QBrush brush;
         brush.setStyle( Qt::SolidPattern);
@@ -72,31 +71,29 @@ QVariant DriverModel::data(const QModelIndex &index, int role) const
         return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
     }else if(role == Qt::DisplayRole || role ==Qt::EditRole ){
         int row = index.row();
-        if(row<0 || row>=_pMgr->allDrivers().size()) return QVariant();
-        iDriver* d = _pMgr->allDrivers().at(row);
+        if(row<0 || row>=_pMgr->driverList().size()) return QVariant();
+        iDriverConfig* d = _pMgr->driverList().at(row);
         if(d == nullptr) return QVariant();
         switch(index.column()){
         case 0:
             return _pMgr->driverNames().at(row);
         case 1:
-            return iDriver::enumStatesString( d->state() );
-        case 2:
             return d->driverInfo()->driverType;
-        case 3:
+        case 2:
             return tr("配置");
         }
     }
     return QVariant();
 }
 
-bool DriverModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool DriverConfigModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if(!index.isValid()){
         return false;
     }
     if (data(index, role) != value) {
-        if(index.row()<0 || index.row()>=_pMgr->allDrivers().size() ) return false;
-        iDriver* d = _pMgr->allDrivers().at(index.row());
+        if(index.row()<0 || index.row()>=_pMgr->driverList().size() ) return false;
+        iDriverConfig* d = _pMgr->driverList().at(index.row());
         if(d == nullptr) return false;
         switch(index.column()){
         case 0:
@@ -110,7 +107,7 @@ bool DriverModel::setData(const QModelIndex &index, const QVariant &value, int r
     return false;
 }
 
-Qt::ItemFlags DriverModel::flags(const QModelIndex &index) const
+Qt::ItemFlags DriverConfigModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
         return Qt::NoItemFlags;
@@ -121,7 +118,7 @@ Qt::ItemFlags DriverModel::flags(const QModelIndex &index) const
     }
 }
 
-bool DriverModel::insertRows(int row, int count, const QModelIndex &parent)
+bool DriverConfigModel::insertRows(int row, int count, const QModelIndex &parent)
 {
     if(row<0) row=0;
     if(count > 1) count = 1;
@@ -137,18 +134,18 @@ bool DriverModel::insertRows(int row, int count, const QModelIndex &parent)
     return true;
 }
 
-bool DriverModel::removeRows(int row, int count, const QModelIndex &parent)
+bool DriverConfigModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     if(row<0) row=0;
     beginRemoveRows(parent, row, row + count - 1);
-    for(int i=0; i<count&&i<_pMgr->allDrivers().size(); ++i){
+    for(int i=0; i<count&&i<_pMgr->driverList().size(); ++i){
         _pMgr->removeDriver(row);
     }
     endRemoveRows();
     return true;
 }
 
-QList<int> DriverModel::errorRows(){
+QList<int> DriverConfigModel::errorRows(){
     QList<int> ret;
     QStringList names = _pMgr->driverNames();
     for(int i=0; i<names.size(); i++){
@@ -161,41 +158,9 @@ QList<int> DriverModel::errorRows(){
     return ret;
 }
 
-int DriverModel::startDriver(int row){
-    if(row<0 || row>=_pMgr->allDrivers().size() ) return -1;
-    iDriver* d = _pMgr->allDrivers().at(row);
-    QMetaObject::invokeMethod(d, "start");
-    QModelIndex index =  createIndex(row, 1);
-    emit dataChanged( index, index, QVector<int>() << Qt::DisplayRole );
-    return 0;
-}
-
-int DriverModel::stopDriver(int row){
-    if(row<0 || row>=_pMgr->allDrivers().size() ) return -1;
-    iDriver* d = _pMgr->allDrivers().at(row);
-    QMetaObject::invokeMethod(d, "stop");
-    QModelIndex index =  createIndex(row, 1);
-    emit dataChanged( index, index, QVector<int>() << Qt::DisplayRole );
-    return 0;
-}
-
-void DriverModel::startAllDriver(void){
-    _pMgr->startAll();
-    QModelIndex startIndex = createIndex(0,1);
-    QModelIndex stopIndex = createIndex(rowCount(),1);
-    emit dataChanged( startIndex, stopIndex, QVector<int>() << Qt::DisplayRole );
-}
-
-void DriverModel::stopAllDriver(void){
-    _pMgr->stopAll();
-    QModelIndex startIndex = createIndex(0,1);
-    QModelIndex stopIndex = createIndex(rowCount(),1);
-    emit dataChanged( startIndex, stopIndex, QVector<int>() << Qt::DisplayRole );
-}
-
-void DriverModel::showConfigUI(QModelIndex index){
+void DriverConfigModel::showConfigUI(QModelIndex index){
     if(!index.isValid()) return;
     if(index.column() ==3){
-        _pMgr->allDrivers().at(index.row())->showUI(true);
+        _pMgr->driverList().at(index.row())->showUI(true);
     }
 }

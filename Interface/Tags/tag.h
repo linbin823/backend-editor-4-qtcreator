@@ -1,27 +1,29 @@
-#ifndef ITAGINFO_H
-#define ITAGINFO_H
-#include <QObject>
-#include <QDateTime>
+#ifndef TAG_H
+#define TAG_H
 #include <QVariant>
+#include <QDateTime>
+#include <QDataStream>
 #include <QTimer>
 #include "iloadsave.h"
+
+class QReadWriteLock;
 class TagAddress;
 
-class iTagInfo : public QObject, public iLoadSave
+class Tag : public QObject, public iLoadSave
 {
     Q_OBJECT
     Q_PROPERTY(QString   name           READ name           NOTIFY nameChanged)
     Q_PROPERTY(QString   description    READ description    NOTIFY descriptionChanged)
     Q_PROPERTY(QString   extraInfo      READ extraInfo      NOTIFY extraInfoChanged)
-    Q_PROPERTY(int       type           READ type           NOTIFY typeChanged)
+    Q_PROPERTY(enumTypeCode type        READ type           WRITE  setType        NOTIFY typeChanged)
     Q_PROPERTY(QVariant  value          READ value          WRITE  setvalue       NOTIFY valueChanged)
     Q_PROPERTY(QString   unit           READ unit           NOTIFY unitChanged)
-    Q_PROPERTY(int       projectID      READ projectID      NOTIFY projectIDChanged)
+//    Q_PROPERTY(int       projectID      READ projectID      NOTIFY projectIDChanged)
     Q_PROPERTY(QString   projectName    READ projectName    NOTIFY projectNameChanged)
-    Q_PROPERTY(int       stationID      READ stationID      NOTIFY stationIDChanged)
+//    Q_PROPERTY(int       stationID      READ stationID      NOTIFY stationIDChanged)
     Q_PROPERTY(QString   stationName    READ stationName    NOTIFY stationNameChanged)
-    Q_PROPERTY(int       moduleID       READ moduleID       NOTIFY moduleIDChanged)
-    Q_PROPERTY(int       pointID        READ pointID        NOTIFY pointIDChanged)
+//    Q_PROPERTY(int       moduleID       READ moduleID       NOTIFY moduleIDChanged)
+//    Q_PROPERTY(int       pointID        READ pointID        NOTIFY pointIDChanged)
     Q_PROPERTY(QString   systemName     READ systemName     NOTIFY systemNameChanged)
     Q_PROPERTY(QDateTime lastUpdateTime READ lastUpdateTime NOTIFY lastUpdateTimeChanged)
 //    Q_PROPERTY(int       qualityCode    READ qualityCode    NOTIFY qualityCodeChanged)
@@ -29,29 +31,31 @@ class iTagInfo : public QObject, public iLoadSave
     Q_PROPERTY(float     scaleOffset    READ scaleOffset    NOTIFY scaleOffsetChanged)
 
 public:
-    explicit iTagInfo(QObject *parent = 0):QObject(parent){}
-    virtual ~iTagInfo(){}
+    explicit Tag(const QString& name, QObject *parent = 0);
+    Tag(const Tag& other);
+    virtual ~Tag();
+
     enum enumRWStrategyCode{
-        RWS_DISABLE,
+        RWS_DISABLE = 0x00,
         RWS_READ_ONLY,
         RWS_WRITE_ONLY,
         RWS_READ_WRITE
     };
-    static QString enumRWStrategyString(int RWCode){
+    static QString enumRWStrategyString(enumRWStrategyCode RWCode){
         switch(RWCode){
         case RWS_DISABLE:
-            return tr("禁用");
+            return tr("禁用.");
         case RWS_READ_ONLY:
-            return tr("只读");
+            return tr("只读.");
         case RWS_WRITE_ONLY:
-            return tr("只写");
+            return tr("只写.");
         case RWS_READ_WRITE:
-            return tr("读写");
+            return tr("读写.");
         default:
             return QString();
         }
     }
-    static int enumRWStrategyValue(const QString& string){
+    static enumRWStrategyCode enumRWStrategyValue(const QString& string){
         if(string == enumRWStrategyString(RWS_DISABLE)){
             return RWS_DISABLE;
         }else if(string == enumRWStrategyString(RWS_READ_ONLY)){
@@ -60,7 +64,7 @@ public:
             return RWS_WRITE_ONLY;
         }else if(string == enumRWStrategyString(RWS_READ_WRITE)){
             return RWS_READ_WRITE;
-        }else return 0;
+        }else return RWS_DISABLE;
     }
     static QStringList enumRWStrategyStrings(){
         QStringList ret;
@@ -70,7 +74,7 @@ public:
     }
 
     enum enumTypeCode{
-        TYPE_DEFAULT=0x00,
+        TYPE_DEFAULT = 0x00,
         TYPE_BOOL,
         TYPE_INT16,
         TYPE_INT32,
@@ -83,12 +87,13 @@ public:
         TYPE_STRING,
         TYPE_DATETIME,
         TYPE_TIME,
-        TYPE_DATE
+        TYPE_DATE,
+        TYPE_UNKNOWN
     };
-    static QString enumTypeString(int typeCode) {
+    static QString enumTypeString(enumTypeCode typeCode) {
         switch(typeCode){
         case TYPE_DEFAULT:
-            return tr("默认");
+            return tr("Default");
         case TYPE_BOOL:
             return tr("BOOL");
         case TYPE_INT16:
@@ -116,10 +121,10 @@ public:
         case TYPE_DATE:
             return tr("DATE");
         default:
-            return QString();
+            return tr("未知类型.");
         }
     }
-    static int enumTypeValue(const QString& string){
+    static enumTypeCode enumTypeValue(const QString& string){
         if(string == enumTypeString(TYPE_DEFAULT)){
             return TYPE_DEFAULT;
         }else if(string == enumTypeString(TYPE_BOOL)){
@@ -148,7 +153,7 @@ public:
             return TYPE_TIME;
         }else if(string == enumTypeString(TYPE_DATE)){
             return TYPE_DATE;
-        }else return 0;
+        }else return TYPE_UNKNOWN;
     }
     static QStringList enumTypeStrings(){
         QStringList ret;
@@ -161,9 +166,13 @@ public:
         return ret;
     }
 
-    virtual QString     extraInfo()     const=0;
-    virtual QString     description()   const=0;
-    virtual int         type()          const=0;
+    QString extraInfo()const;
+    void setExtraInfo(const QString& extraInfo);
+    QString description()const;
+    void setDescription(const QString& description);
+    enumTypeCode type()const;
+    void setType(enumTypeCode type);
+
     /*!
      * \brief 读测点值
      * 输入参数：无
@@ -173,20 +182,38 @@ public:
      * 功能描述：
      * 1、执行的时候，value要进行工程量变换。。。
      */
-    virtual QVariant    value()         const=0;
-    virtual QString     name()          const=0;
-    virtual QString     unit()          const=0;
-    virtual int         projectID()     const=0;
-    virtual QString     projectName()   const=0;
-    virtual int         stationID()     const=0;
-    virtual QString     stationName()   const=0;
-    virtual int         moduleID()      const=0;
-    virtual int         pointID()       const=0;
-    virtual QString     systemName()    const=0;
-    virtual QDateTime   lastUpdateTime()const=0;
-//    virtual QString     pollGroupName() const=0;
-    virtual float       scaleRatio()    const=0;
-    virtual float       scaleOffset()   const=0;
+    QVariant value()const;
+    //setValue & updateValue is blow these basic functions
+
+    QString name()const;
+    void setName(const QString& name);
+    QString unit()const;
+    void setUnit(const QString& newUnit);
+//    int projectID()const;
+//    void setProjectID(int id);
+    QString projectName()const;
+    void setProjectName(const QString& newProjectName);
+//    int stationID()const;
+//    void setStationID(int id);
+    QString stationName()const;
+    void setStationName(const QString& newStationName);
+//    int moduleID()const;
+//    void setModuleID(int id);
+//    int pointID()const;
+//    void setPointID(int id);
+    QString systemName()const;
+    void setSystemName(const QString& newSystemName);
+    float scaleRatio() const;
+    void setScaleRatio(float ratio);
+    float scaleOffset() const;
+    void setScaleOffset(float offset);
+
+    /*!
+     * \brief allAddresses
+     * get all address structure related to this tagInfo
+     * \return
+     */
+    inline QList<TagAddress*> allAddresses() const { return addresses; }
 
     /*!
      * \brief unscaledValue
@@ -194,13 +221,21 @@ public:
      * for drivers who need
      * \return
      */
-    virtual QVariant    unscaledValue() const=0;
+    QVariant unscaledValue() const;
+
     /*!
-     * \brief allAddresses
-     * get all address structure related to this tagInfo
-     * \return
+     * \brief 写测点值
+     * 输入参数：QVariant value
+     * 返回数值：
+     * 0：成功
+     * 其他：失败
+     * 功能描述：
+     * 1、专门给上位软件模块用的方法
+     * 2、执行的时候，value要进行工程量变换。。。
+     * 3、最后更新时间:without changing updateTime.
      */
-    virtual QList<TagAddress*> allAddresses() const=0;
+    int setvalue(const QVariant &value);//for HMI
+
     /*!
      * \brief 写测点值
      * 输入参数：
@@ -214,60 +249,71 @@ public:
      * 2、执行的时候，value 不需要 执行阶码缩放、工程量变换。。。
      * 3、最后更新时间按照传入参数执行更新。
      */
-    virtual int updatevalue(const QVariant &value, const QDateTime &time = QDateTime::currentDateTime() )=0;
-    /*!
-     * \brief 写测点值
-     * 输入参数：QVariant value
-     * 返回数值：
-     * 0：成功
-     * 其他：失败
-     * 功能描述：
-     * 1、专门给上位软件模块用的方法
-     * 2、执行的时候，value要进行工程量变换。。。
-     * 3、最后更新时间:without changing updateTime.
-     */
-    virtual int setvalue(const QVariant &value)=0;
+    int updateValue(const QVariant &value, const QDateTime &time = QDateTime::currentDateTime() );//for driver
+
     /*!
      * \brief set Tag's Read Write Strategy. Options include disabel/Read only/Write only/readWrite
      * \param RWS is read write strategy
      */
-    virtual void setRWStrategy(int RWS, const QString& driverName)=0;
-    virtual int RWStrategy(const QString& driverName) const=0;
+    void setRWStrategy(enumRWStrategyCode RWS, const QString& driverName);
+    enumRWStrategyCode RWStrategy(const QString& driverName)const;
 
     /*!
      * \brief address
      * \param driverName
      * \return address belongs to a driver
      */
-    virtual QString address(const QString& driverName) const=0;
-    virtual void setAddress(const QString& address, const QString& driverName)=0;
+    QString address(const QString& driverName)const;
+    void setAddress(const QString& address, const QString& driverName);
 
     /*!
      * \brief isAddressCorrect
      * \param driverName
      * \return whether the address is correct
      */
-    virtual bool isAddressCorrect(const QString& driverName)const=0;
-    /*!
-     * \brief addressErrorString
-     * \param driverName
-     * \return the address error string.
-     * if correct, return QString()
-     */
-    virtual QString addressErrorString(const QString& driverName)const=0;
+    bool isAddressCorrect(const QString& driverName)const;
+
     /*!
      * \brief allAvailableRWStrategy
      * get all available RWStrategy for this driver.
      * \return
      */
-    virtual QList<int> allAvailableRWStrategy(const QString& driverName)const=0;
+    QList<enumRWStrategyCode> allAvailableRWStrategy(const QString& driverName)const;
+
     /*!
      * \brief availableRWStrategy
      * always update available RWSStrategy after change address.
      * \param driverName
      * \return
      */
-    virtual QList<int> availableRWStrategy(const QString& driverName)const=0;
+    QList<enumRWStrategyCode> availableRWStrategy(const QString& driverName)const;
+
+    /*!
+     * \brief addressErrorString
+     * \param driverName
+     * \return the address error string.
+     * if correct, return QString()
+     */
+    QString addressErrorString(const QString& driverName)const;
+
+    QDateTime lastUpdateTime() const;
+
+    //implement of iLoadSave
+    void save(iLoadSaveProcessor* processor) override;
+    void load(iLoadSaveProcessor* processor) override;
+
+//    QString pollGroupName() const override;
+//    void setPollGroupName(const QString& newPollGroupName);
+//    bool needRead()const override;
+
+    //    friend QDataStream& operator<<(QDataStream& out, const Tag& t);
+    //    friend QDataStream& operator>>(QDataStream& in, Tag& t);
+    friend bool operator< (const Tag& t1, const Tag& t2);
+    friend bool operator> (const Tag& t1, const Tag& t2);
+    friend bool operator==(const Tag& t1, const Tag& t2);
+    friend bool operator>=(const Tag& t1, const Tag& t2);
+    friend bool operator<=(const Tag& t1, const Tag& t2);
+    Tag& operator= (const Tag& other);
 
 public slots:
     /*!
@@ -280,7 +326,7 @@ public slots:
      *  That means, one tag can write to several controllers(with different drivers)
      *  but only one drive can read and update the tag's value
      */
-//    virtual void pollValue() =0;
+//    void pollValue();
 
 signals:
     void nameChanged();
@@ -289,12 +335,12 @@ signals:
     void typeChanged();
     void valueChanged();
     void unitChanged();
-    void projectIDChanged();
+//    void projectIDChanged();
     void projectNameChanged();
-    void stationIDChanged();
+//    void stationIDChanged();
     void stationNameChanged();
-    void moduleIDChanged();
-    void pointIDChanged();
+//    void moduleIDChanged();
+//    void pointIDChanged();
     void systemNameChanged();
     void lastUpdateTimeChanged();
 //    void pollGroupNameChanged();
@@ -302,6 +348,37 @@ signals:
     void scaleOffsetChanged();
     void addressChanged();
     void RWStrategyChanged();
+
+private:
+    /*!
+     * \brief _setNeedToWrite
+     * \param excludeDriverName
+     * Set each needToWrite of drivers to true
+     */
+    void _setNeedToWrite();
+    /*!
+     * \brief _setValue
+     * for updateValue and setValue
+     * set new value, emit basic signals
+     * if needScale is true, then do the scale. Otherwise, skip it
+     * \return
+     * 1 means ok but new value equals origin value
+     * 0 means ok and value updated
+     * -1 means failed
+     */
+    int _setValue(const QVariant &value, bool needScale = false);
+public:
+    QList<TagAddress *> addresses;
+private:
+//    bool _needToRead;
+//    QString _pollGroupName;
+    enumTypeCode _type;
+//    int _projectID,_stationID,_moduleID,_pointID;
+    QString _description,_extraInfo, _name, _unit, _projectName, _stationName, _systemName;
+    float _ratio, _offset;
+    QVariant _value;
+    QDateTime _lastUpdateTime;
+    QReadWriteLock *_pLock;
 };
 
 class TagAddress: public iLoadSave
@@ -310,8 +387,8 @@ public:
     bool    needToWrite;
     QString address;
     QString driverName;
-    iTagInfo* tagInfo;
-    int     RWStrategy;
+    Tag* tag;
+    Tag::enumRWStrategyCode RWStrategy;
     void save(iLoadSaveProcessor *processor){
         processor->writeValue("address",address);
         processor->writeValue("driverName",driverName);
@@ -324,4 +401,4 @@ public:
     }
 };
 
-#endif // ITAGINFO_H
+#endif // TAG_H

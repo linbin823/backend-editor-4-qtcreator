@@ -1,7 +1,7 @@
 pragma Singleton
-
-import QtQuick 2.15
-import "qmlTagInterface"
+import QtQml 2.0
+import QtQuick 2.0
+import "TagsInterface"
 
 TagsMgr {
     Tag {
@@ -32,8 +32,12 @@ TagsMgr {
         tagName: "testListedTag4"
     }
 
-    property QtObject testListedTag1: t0001
-    property QtObject testListedTag2: t0002
-    property QtObject testListedTag3: t0003
-    property QtObject testListedTag4: t0004
+    property Tag testListedTag1: t0001
+    property Tag testListedTag2: t0002
+    property Tag testListedTag3: t0003
+    property Tag testListedTag4: t0004
+
+    Component.onCompleted: {
+        Drivers.init(this)
+    }
 }

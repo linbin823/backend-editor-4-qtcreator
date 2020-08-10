@@ -1,66 +1,66 @@
-#ifndef ALARMDATADELEGATES_H
-#define ALARMDATADELEGATES_H
+#ifndef TAGMGRDELEGATES_H
+#define TAGMGRDELEGATES_H
 #include <QItemDelegate>
 #include <QComboBox>
 #include <QCheckBox>
-#include "taginfo.h"
-#include "rtdata.h"
-#include "rtdatatablemodel.h"
+#include "../Interface/Tags/tagmgr.h"
+#include "../Interface/Tags/tag.h"
+#include "tagmgrtablemodel.h"
 
 //remove PollGroup 2017.11
 //#include "PollGroups/pollgroupmgr.h"
 
-class TagInfoRWStrategyDelegate: public QItemDelegate{
+class TagRWStrategyDelegate: public QItemDelegate{
     Q_OBJECT
 public:
-    TagInfoRWStrategyDelegate(RTDataTableModel* model, QObject* parent =0): QItemDelegate(parent), _pModel(model){}
+    TagRWStrategyDelegate(TagMgrTableModel* model, QObject* parent =0): QItemDelegate(parent), _pModel(model){}
     QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                           const QModelIndex &index) const override{
         Q_UNUSED(option)
         QComboBox* editor = new QComboBox(parent);
         QString tagName = _pModel->data( index.sibling(index.row(),0), Qt::UserRole ).toString();
-        TagInfo* t = static_cast<TagInfo*>( RTData::Instance()->tagInfo(tagName) );
+        Tag* t = static_cast<Tag*>( TagMgr::Instance()->tag(tagName) );
         int partName, itemName;
         QString driverName;
         _pModel->getNames(index.column(), &partName, &itemName, &driverName);
         if(!t){
-            editor->addItems( TagInfo::enumRWStrategyStrings() );
+            editor->addItems( Tag::enumRWStrategyStrings() );
             return editor;
         }
-        foreach (int rws, t->availableRWStrategy( driverName )) {
-            editor->addItem( TagInfo::enumRWStrategyString(rws),rws);
+        foreach (Tag::enumRWStrategyCode rws, t->availableRWStrategy( driverName )) {
+            editor->addItem( Tag::enumRWStrategyString(rws),rws);
         }
-        editor->setCurrentText( TagInfo::enumRWStrategyString(t->RWStrategy( driverName )) );
+        editor->setCurrentText( Tag::enumRWStrategyString(t->RWStrategy( driverName )) );
         return editor;
     }
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override{
         QComboBox* combobox = static_cast<QComboBox*>(editor);
         if(!combobox) return;
-        model->setData(index, TagInfo::enumRWStrategyValue( combobox->currentText() ), Qt::EditRole);
+        model->setData(index, Tag::enumRWStrategyValue( combobox->currentText() ), Qt::EditRole);
     }
 private:
-    RTDataTableModel* _pModel;
+    TagMgrTableModel* _pModel;
 };
 
-class TagInfoTypeDelegate: public QItemDelegate{
+class TagTypeDelegate: public QItemDelegate{
     Q_OBJECT
 public:
-    TagInfoTypeDelegate(RTDataTableModel* model, QObject* parent =0): QItemDelegate(parent), _pModel(model){}
+    TagTypeDelegate(TagMgrTableModel* model, QObject* parent = 0): QItemDelegate(parent), _pModel(model){}
     QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                           const QModelIndex &index) const override{
         Q_UNUSED(option)
         QComboBox* editor = new QComboBox(parent);
-        editor->addItems( TagInfo::enumTypeStrings() );
+        editor->addItems( Tag::enumTypeStrings() );
         editor->setCurrentText( index.data().toString() );
         return editor;
     }
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override{
         QComboBox* combobox = static_cast<QComboBox*>(editor);
         if(!combobox) return;
-        model->setData(index, TagInfo::enumTypeValue( combobox->currentText() ), Qt::EditRole);
+        model->setData(index, Tag::enumTypeValue( combobox->currentText() ), Qt::EditRole);
     }
 private:
-    RTDataTableModel* _pModel;
+    TagMgrTableModel* _pModel;
 };
 
 //remove PollGroup 2017.11
@@ -77,4 +77,4 @@ private:
 //        return editor;
 //    }
 //};
-#endif // ALARMDATADELEGATES_H
+#endif // TAGMGRDELEGATES_H

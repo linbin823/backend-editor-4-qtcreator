@@ -4,7 +4,8 @@
 #include <QObject>
 #include <QDateTime>
 #include <QVariant>
-#include "../RTData/itaginfo.h"
+#include "../Tags/tagmgr.h"
+#include "../Tags/tag.h"
 #include "iloadsave.h"
 /*!
  * \brief The iAlarmTagInfo class

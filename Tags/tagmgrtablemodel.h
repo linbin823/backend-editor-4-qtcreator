@@ -1,16 +1,15 @@
-#ifndef RTDATATABLEMODEL_H
-#define RTDATATABLEMODEL_H
+#ifndef TAGMGRTABLEMODEL_H
+#define TAGMGRTABLEMODEL_H
 
 #include <QObject>
 #include <QAbstractTableModel>
-class iDriver;
-class TagInfo;
+class Tag;
 
-class RTDataTableModel : public QAbstractTableModel
+class TagMgrTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit RTDataTableModel(QObject* parent =0);
+    explicit TagMgrTableModel(QObject* parent =0);
 
     enum enumPartNames{
         GENERAL = 0,
@@ -31,12 +30,12 @@ public:
         Unit,
         ExtraInfo,
         SubSystemName,
-        ProjectID,
+//        ProjectID,
         ProjecttName,
-        StationID,
+//        StationID,
         StationName,
-        ModuleID,
-        PointID,
+//        ModuleID,
+//        PointID,
 
         StartOfDrivers,
         Address,
@@ -66,14 +65,14 @@ public:
      * \param value
      * \return
      */
-    bool setValue(TagInfo *t, int column, const QVariant& value);
+    bool setValue(Tag *t, int column, const QVariant& value);
     /*!
      * \brief value
      * fetch value from certain column's item
      * \param column
      * \return
      */
-    QVariant value(TagInfo *t,int column)const;
+    QVariant value(Tag *t, int column) const;
     /*!
      * \brief columnName
      * get certain Name of column
@@ -124,4 +123,4 @@ private:
     QList<bool> _partsVisibleState;
 };
 
-#endif // RTDATATABLEMODEL_H
+#endif // TAGMGRTABLEMODEL_H

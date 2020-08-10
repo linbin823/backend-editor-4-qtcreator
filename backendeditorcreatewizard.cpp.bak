@@ -1,4 +1,4 @@
-﻿#include "backendeditorcreatewizard.h"
+#include "backendeditorcreatewizard.h"
 #include "backendeditorconstants.h"
 #include <coreplugin/editormanager/editormanager.h>
 

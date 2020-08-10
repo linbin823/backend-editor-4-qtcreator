@@ -1,8 +1,9 @@
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
-#include "taginfo.h"
-#include "drivermgr.h"
+#include "../Interface/Tags/tag.h"
+#include "../Interface/Drivers/idriver.h"
+#include "../Interface/Drivers/drivermgr.h"
 #include <QMutexLocker>
 #include <QReadWriteLock>
 
@@ -14,23 +15,23 @@
 //    float _ratio, _offset;
 //    QVariant _value;
 //    QDateTime _lastUpdateTime;
-static DriverMgr *_pDriverMgr = nullptr;
+static DriverConfigMgr *_pDriverConfigMgr = nullptr;
 
-TagInfo::TagInfo(const QString &name, QObject *parent)
-    :iTagInfo(parent)
+Tag::Tag(const QString &name, QObject *parent)
+    :QObject(parent)
 {
-    if(_pDriverMgr == nullptr) {
-        _pDriverMgr = DriverMgr::Instance();
+    if(_pDriverConfigMgr == nullptr) {
+        _pDriverConfigMgr = DriverConfigMgr::Instance();
     }
     _pLock = new QReadWriteLock(QReadWriteLock::NonRecursive);
     addresses.clear();
 //    _needToRead = false;
 //    setPollGroupName(QString());
     setType(TYPE_DEFAULT);
-    setProjectID(0);
-    setStationID(0);
-    setModuleID(0);
-    setPointID(0);
+//    setProjectID(0);
+//    setStationID(0);
+//    setModuleID(0);
+//    setPointID(0);
 
     setDescription(QString());
     setExtraInfo(QString());
@@ -46,175 +47,240 @@ TagInfo::TagInfo(const QString &name, QObject *parent)
     setvalue( QVariant(0) );
 }
 
-QString TagInfo::extraInfo()const{
+Tag::Tag(const Tag &other)
+{
+    _pLock = new QReadWriteLock(QReadWriteLock::NonRecursive);
+    addresses = other.addresses;
+    //    _needToRead = other._needToRead;
+    //    setPollGroupName(other.pollGroupName);
+    setType(other.type());
+
+//    setProjectID(other.projectID());
+//    setStationID(other.stationID());
+//    setModuleID(other.moduleID());
+//    setPointID(other.pointID());
+
+    setDescription(other.description());
+    setExtraInfo(other.extraInfo());
+    setName( other.name() );
+    setUnit( other.unit() );
+    setProjectName( other.projectName() );
+    setStationName( other.stationName() );
+    setSystemName( other.systemName() );
+
+    setScaleRatio( other.scaleRatio() );
+    setScaleOffset( other.scaleOffset() );
+
+    setvalue( other.value() );
+}
+
+Tag &Tag::operator=(const Tag &other)
+{
+    if (this != &other) {
+        this->_pLock->unlock();
+        addresses = other.addresses;
+        //    _needToRead = other._needToRead;
+        //    setPollGroupName(other.pollGroupName);
+        setType(other.type());
+
+//        setProjectID(other.projectID());
+//        setStationID(other.stationID());
+//        setModuleID(other.moduleID());
+//        setPointID(other.pointID());
+
+        setDescription(other.description());
+        setExtraInfo(other.extraInfo());
+        setName( other.name() );
+        setUnit( other.unit() );
+        setProjectName( other.projectName() );
+        setStationName( other.stationName() );
+        setSystemName( other.systemName() );
+
+        setScaleRatio( other.scaleRatio() );
+        setScaleOffset( other.scaleOffset() );
+
+        setvalue( other.value() );
+    }
+    return *this;
+}
+
+Tag::~Tag()
+{
+    _pLock->unlock();
+    delete _pLock;
+}
+
+QString Tag::extraInfo()const{
     return _extraInfo;
 }
 
-void TagInfo::setExtraInfo(const QString& extraInfo){
+void Tag::setExtraInfo(const QString& extraInfo){
     if(_extraInfo != extraInfo){
         _extraInfo = extraInfo;
         emit extraInfoChanged();
     }
 }
 
-QString TagInfo::description()const{
+QString Tag::description()const{
     return _description;
 }
-void TagInfo::setDescription(const QString& description){
+void Tag::setDescription(const QString& description){
     if(_description != description){
         _description = description;
         emit descriptionChanged();
     }
 }
 
-int TagInfo::type()const{
+Tag::enumTypeCode Tag::type()const{
     return _type;
 }
 
-void TagInfo::setType(int type){
+void Tag::setType(enumTypeCode type){
     if(_type != type){
         _type = type;
         emit typeChanged();
     }
 }
 
-QString TagInfo::name()const{
+QString Tag::name()const{
     return _name;
 }
 
-void TagInfo::setName(const QString& name){
+void Tag::setName(const QString& name){
     if(_name != name){
         _name = name;
         emit nameChanged();
     }
 }
 
-QString TagInfo::unit()const{
+QString Tag::unit()const{
     return _unit;
 }
 
-void TagInfo::setUnit(const QString& newUnit){
+void Tag::setUnit(const QString& newUnit){
     if(_unit != newUnit){
         _unit = newUnit;
         emit unitChanged();
     }
 }
 
-int TagInfo::projectID()const{
-    return _projectID;
-}
+//int Tag::projectID()const{
+//    return _projectID;
+//}
 
-void TagInfo::setProjectID(int id){
-    if(_projectID!=id){
-        _projectID = id;
-        emit projectIDChanged();
-    }
-}
+//void Tag::setProjectID(int id){
+//    if(_projectID!=id){
+//        _projectID = id;
+//        emit projectIDChanged();
+//    }
+//}
 
-QString TagInfo::projectName()const{
+QString Tag::projectName()const{
     return _projectName;
 }
 
-void TagInfo::setProjectName(const QString& newProjectName){
+void Tag::setProjectName(const QString& newProjectName){
     if(_projectName != newProjectName){
         _projectName = newProjectName;
         emit projectNameChanged();
     }
 }
 
-int TagInfo::stationID()const{
-    return _stationID;
-}
+//int Tag::stationID()const{
+//    return _stationID;
+//}
 
-void TagInfo::setStationID(int id){
-    if(_stationID != id){
-        _stationID = id;
-        emit stationIDChanged();
-    }
-}
+//void Tag::setStationID(int id){
+//    if(_stationID != id){
+//        _stationID = id;
+//        emit stationIDChanged();
+//    }
+//}
 
-QString TagInfo::stationName()const{
+QString Tag::stationName()const{
     return _stationName;
 }
 
-void TagInfo::setStationName(const QString& newStationName){
+void Tag::setStationName(const QString& newStationName){
     if(_stationName != newStationName){
         _stationName = newStationName;
         emit stationNameChanged();
     }
 }
 
-int TagInfo::moduleID()const{
-    return _moduleID;
-}
-void TagInfo::setModuleID(int id){
-    if(_moduleID != id){
-        _moduleID = id;
-        emit moduleIDChanged();
-    }
-}
+//int Tag::moduleID()const{
+//    return _moduleID;
+//}
 
-int TagInfo::pointID()const{
-    return _pointID;
-}
-void TagInfo::setPointID(int id){
-    if(_pointID != id){
-        _pointID = id;
-        emit pointIDChanged();
-    }
-}
+//void Tag::setModuleID(int id){
+//    if(_moduleID != id){
+//        _moduleID = id;
+//        emit moduleIDChanged();
+//    }
+//}
 
-QString TagInfo::systemName()const{
+//int Tag::pointID()const{
+//    return _pointID;
+//}
+//void Tag::setPointID(int id){
+//    if(_pointID != id){
+//        _pointID = id;
+//        emit pointIDChanged();
+//    }
+//}
+
+QString Tag::systemName()const{
     return _systemName;
 }
-void TagInfo::setSystemName(const QString& newSystemName){
+
+void Tag::setSystemName(const QString& newSystemName){
     if(_systemName != newSystemName){
         _systemName = newSystemName;
         emit systemNameChanged();
     }
 }
 
-//QString TagInfo::pollGroupName() const{
+//QString Tag::pollGroupName() const{
 //    return _pollGroupName;
 //}
 
-//void TagInfo::setPollGroupName(const QString& newPollGroupName){
+//void Tag::setPollGroupName(const QString& newPollGroupName){
 //    if(_pollGroupName != newPollGroupName){
 //        _pollGroupName = newPollGroupName;
 //        emit pollGroupNameChanged();
 //    }
 //}
 
-float TagInfo::scaleRatio() const{
+float Tag::scaleRatio() const{
     return _ratio;
 }
 
-void TagInfo::setScaleRatio(float ratio){
+void Tag::setScaleRatio(float ratio){
     if(ratio!=0 && _ratio!=ratio){
         _ratio = ratio;
         emit scaleRatioChanged();
     }
 }
 
-float TagInfo::scaleOffset() const{
+float Tag::scaleOffset() const{
     return _offset;
 }
 
-void TagInfo::setScaleOffset(float offset){
+void Tag::setScaleOffset(float offset){
     if(_offset!=offset){
         _offset = offset;
         emit scaleOffsetChanged();
     }
 }
 
-QVariant TagInfo::value()const{
+QVariant Tag::value()const{
     _pLock->lockForRead();
     QVariant ret(_value);
     _pLock->unlock();
     return ret;
 }
 
-QVariant TagInfo::unscaledValue() const{
+QVariant Tag::unscaledValue() const{
     _pLock->lockForRead();
     QVariant ret;
     switch (_type) {
@@ -303,7 +369,7 @@ QVariant TagInfo::unscaledValue() const{
     return ret;
 }
 
-int TagInfo::setvalue(const QVariant& value){
+int Tag::setvalue(const QVariant& value){
     _pLock->lockForWrite();
     int ret = _setValue(value,false);
     if(ret == 0){
@@ -313,7 +379,7 @@ int TagInfo::setvalue(const QVariant& value){
     return ret;
 }
 
-int TagInfo::updatevalue(const QVariant& value, const QDateTime& time){
+int Tag::updateValue(const QVariant& value, const QDateTime& time){
     _pLock->lockForWrite();
     int ret = _setValue(value,true);
     if(ret>=0){
@@ -328,7 +394,7 @@ int TagInfo::updatevalue(const QVariant& value, const QDateTime& time){
     return ret;
 }
 
-int TagInfo::_setValue(const QVariant &value, bool needScale){
+int Tag::_setValue(const QVariant &value, bool needScale){
     switch (_type) {
     case TYPE_DEFAULT:
         if( value.isValid()){
@@ -499,7 +565,7 @@ int TagInfo::_setValue(const QVariant &value, bool needScale){
     }
 }
 
-void TagInfo::setRWStrategy(int RWS, const QString &driverName){
+void Tag::setRWStrategy(enumRWStrategyCode RWS, const QString &driverName){
     foreach (TagAddress* addr, addresses) {
         if(addr==0) continue;
         if(addr->driverName == driverName){
@@ -525,17 +591,17 @@ void TagInfo::setRWStrategy(int RWS, const QString &driverName){
     }
 }
 
-int TagInfo::RWStrategy(const QString& driverName)const{
+Tag::enumRWStrategyCode Tag::RWStrategy(const QString& driverName)const{
     foreach (TagAddress* addr, addresses) {
         if(addr==0) continue;
         if(addr->driverName == driverName){
             return addr->RWStrategy;
         }
     }
-    return iTagInfo::RWS_DISABLE;
+    return RWS_DISABLE;
 }
 
-QString TagInfo::address(const QString& driverName)const{
+QString Tag::address(const QString& driverName)const{
     foreach (TagAddress* addr, addresses) {
         if(addr==0) continue;
         if(addr->driverName == driverName){
@@ -545,7 +611,7 @@ QString TagInfo::address(const QString& driverName)const{
     return QString();
 }
 
-void TagInfo::setAddress(const QString& address, const QString& driverName){
+void Tag::setAddress(const QString& address, const QString& driverName){
     bool found = false;
     foreach (TagAddress* addr, addresses) {
         if(addr==0) continue;
@@ -556,61 +622,63 @@ void TagInfo::setAddress(const QString& address, const QString& driverName){
                 addresses.removeOne(addr);
                 emit addressChanged();
             }
-            else addr->address = address;
-            emit addressChanged();
+            else {
+                addr->address = address;
+                emit addressChanged();
+            }
         }
     }
     if(!found && !address.isNull() && !address.isEmpty()){
         TagAddress* addr=new TagAddress();
         addr->driverName = driverName;
-        addr->RWStrategy = iTagInfo::RWS_DISABLE;
+        addr->RWStrategy = RWS_DISABLE;
         addr->address = address;
         addr->needToWrite = false;
-        addr->tagInfo = this;
+        addr->tag = this;
         addresses.append(addr);
         emit addressChanged();
     }
 }
 
-bool TagInfo::isAddressCorrect(const QString& driverName)const{
+bool Tag::isAddressCorrect(const QString& driverName)const{
     //if address is empty, which means address isn't set, should also regard as correct!
     if(address(driverName).isEmpty()) return true;
-    iDriver* pDriver = qobject_cast<iDriver*>(_pDriverMgr->driver(driverName) );
+    iDriverConfig* pDriver = _pDriverConfigMgr->driver(driverName);
     if(pDriver){
         return pDriver->isAddressCorrect(address(driverName));
     }
     return false;
 }
 
-QList<int> TagInfo::availableRWStrategy(const QString& driverName)const{
-    iDriver* pDriver = qobject_cast<iDriver*>(_pDriverMgr->driver(driverName) );
+QList<Tag::enumRWStrategyCode> Tag::availableRWStrategy(const QString& driverName)const{
+    iDriverConfig* pDriver = _pDriverConfigMgr->driver(driverName);
     if(pDriver){
         return pDriver->availableRWStrategy(address(driverName))<<RWS_DISABLE;
     }
-    return QList<int>();
+    return QList<enumRWStrategyCode>();
 }
 
-QList<int> TagInfo::allAvailableRWStrategy(const QString& driverName)const{
-    iDriver* pDriver = qobject_cast<iDriver*>(_pDriverMgr->driver(driverName) );
+QList<Tag::enumRWStrategyCode> Tag::allAvailableRWStrategy(const QString& driverName)const{
+    iDriverConfig* pDriver = _pDriverConfigMgr->driver(driverName);
     if(pDriver){
         return pDriver->availableRWStrategy()<<RWS_DISABLE;
     }
-    return QList<int>();
+    return QList<enumRWStrategyCode>();
 }
 
-QString TagInfo::addressErrorString(const QString& driverName)const{
-    iDriver* pDriver = qobject_cast<iDriver*>(_pDriverMgr->driver(driverName) );
+QString Tag::addressErrorString(const QString& driverName)const{
+    iDriverConfig* pDriver = _pDriverConfigMgr->driver(driverName);
     if(pDriver){
         return pDriver->addressErrorString(address(driverName));
     }
     return QString();
 }
 
-//bool TagInfo::needRead()const{
+//bool Tag::needRead()const{
 //    return _needToRead;
 //}
 
-//void TagInfo::pollValue(){
+//void Tag::pollValue(){
 //    _needToRead = true;
 //}
 
@@ -622,7 +690,7 @@ QString TagInfo::addressErrorString(const QString& driverName)const{
 //    float _ratio, _offset;
 //    QVariant _value;
 //    QDateTime _lastUpdateTime;
-void TagInfo::save(iLoadSaveProcessor* processor){
+void Tag::save(iLoadSaveProcessor* processor){
     processor->writeValue("addressesCount", addresses.size());
     for(int i=0; i<addresses.size(); ++i){
         processor->moveToInstance("TagAddress",QString::number(i));
@@ -633,10 +701,10 @@ void TagInfo::save(iLoadSaveProcessor* processor){
 //    processor->writeValue("_pollGroupName",_pollGroupName);
 
     processor->writeValue("_type",_type);
-    processor->writeValue("_projectID",_projectID);
-    processor->writeValue("_stationID",_stationID);
-    processor->writeValue("_moduleID",_moduleID);
-    processor->writeValue("_pointID",_pointID);
+//    processor->writeValue("_projectID",_projectID);
+//    processor->writeValue("_stationID",_stationID);
+//    processor->writeValue("_moduleID",_moduleID);
+//    processor->writeValue("_pointID",_pointID);
 
     processor->writeValue("_description",_description);
     processor->writeValue("_extraInfo",_extraInfo);
@@ -654,7 +722,7 @@ void TagInfo::save(iLoadSaveProcessor* processor){
     processor->writeValue("_lastUpdateTime",_lastUpdateTime);
 }
 
-void TagInfo::load(iLoadSaveProcessor* processor){
+void Tag::load(iLoadSaveProcessor* processor){
     foreach (TagAddress* addr, addresses) {
         if(addr!=0) delete addr;
         addresses.removeOne(addr);
@@ -665,7 +733,7 @@ void TagInfo::load(iLoadSaveProcessor* processor){
         processor->moveToInstance("TagAddress",QString::number(i));
         TagAddress* addr=new TagAddress();
         addr->load(processor);
-        addr->tagInfo = this;
+        addr->tag = this;
         addr->needToWrite = false;
         addresses.append(addr);
         processor->moveBackToParent();
@@ -676,10 +744,10 @@ void TagInfo::load(iLoadSaveProcessor* processor){
 //    processor->readValue("_pollGroupName",_pollGroupName);
 
     processor->readValue("_type",_type);
-    processor->readValue("_projectID",_projectID);
-    processor->readValue("_stationID",_stationID);
-    processor->readValue("_moduleID",_moduleID);
-    processor->readValue("_pointID",_pointID);
+//    processor->readValue("_projectID",_projectID);
+//    processor->readValue("_stationID",_stationID);
+//    processor->readValue("_moduleID",_moduleID);
+//    processor->readValue("_pointID",_pointID);
 
     processor->readValue("_description",_description);
     processor->readValue("_extraInfo",_extraInfo);
@@ -698,44 +766,43 @@ void TagInfo::load(iLoadSaveProcessor* processor){
     processor->readValue("_lastUpdateTime",_lastUpdateTime);
 }
 
-
-QDateTime TagInfo::lastUpdateTime()const{
+QDateTime Tag::lastUpdateTime()const{
     return _lastUpdateTime;
 }
 
-//QDataStream& operator<<(QDataStream& out, const TagInfo& t){
+//QDataStream& operator<<(QDataStream& out, const Tag& t){
 //    out<<t._address<<t._rankCode<<t._type<<t._RWStrategy<<t._projectID<<t._stationID<<t._moduleID<<t._pointID;
 //    out<<t._description<<t._extraInfo<<t._name<<t._unit<<t._projectName<<t._stationName<<t._systemName;
 //    out<<t._value;
 //    out<<t._lastUpdateTime;
 //    return out;
 //}
-//QDataStream& operator>>(QDataStream& in, TagInfo& t){
+//QDataStream& operator>>(QDataStream& in, Tag& t){
 //    in>>t._address>>t._type>>t._RWStrategy>>t._projectID>>t._stationID>>t._moduleID>>t._pointID;
 //    in>>t._description>>t._extraInfo>>t._name>>t._unit>>t._projectName>>t._stationName>>t._systemName;
 //    in>>t._value;
 //    in>>t._lastUpdateTime;
 //    return in;
 //}
-bool operator<(const TagInfo& t1, const TagInfo& t2){
+bool operator<(const Tag& t1, const Tag& t2){
     return t1._name < t2._name;
 }
-bool operator>(const TagInfo& t1, const TagInfo& t2){
+bool operator>(const Tag& t1, const Tag& t2){
     return t1._name > t2._name;
 }
-bool operator==(const TagInfo& t1, const TagInfo& t2){
+bool operator==(const Tag& t1, const Tag& t2){
     return t1._name == t2._name;
 }
-bool operator>=(const TagInfo& t1, const TagInfo& t2){
+bool operator>=(const Tag& t1, const Tag& t2){
     return t1._name >= t2._name;
 }
-bool operator<=(const TagInfo& t1, const TagInfo& t2){
+bool operator<=(const Tag& t1, const Tag& t2){
     return t1._name <= t2._name;
 }
 
-void TagInfo::_setNeedToWrite(){
+void Tag::_setNeedToWrite(){
     foreach (TagAddress* addr, addresses) {
-        if(addr->RWStrategy == iTagInfo::RWS_READ_WRITE || addr->RWStrategy == iTagInfo::RWS_WRITE_ONLY )
+        if(addr->RWStrategy == RWS_READ_WRITE || addr->RWStrategy == RWS_WRITE_ONLY )
             addr->needToWrite = true;
     }
 }

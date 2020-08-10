@@ -1,12 +1,12 @@
 HEADERS  += \
-    $$PWD/RTData/itaginfo.h \
-    $$PWD/RTData/irtdata.h \
+    $$PWD/Drivers/drivermgr.h \
     $$PWD/Drivers/idriver.h \
     $$PWD/AlarmData/ialarmtaginfo.h \
     $$PWD/AlarmData/ialarmdata.h \
-    $$PWD/iglobal.h \
-    $$PWD/Drivers/idrivermgr.h
+    $$PWD/Tags/tag.h \
+    $$PWD/Tags/tagmgr.h \
+    $$PWD/iglobal.h
 
-INCLUDEPATH += $$PWD
+INCLUDEPATH += $$PWD/
 
 SOURCES +=

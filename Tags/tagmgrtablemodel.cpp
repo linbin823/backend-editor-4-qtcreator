@@ -1,17 +1,18 @@
-#include "rtdatatablemodel.h"
-#include "rtdata.h"
-#include "taginfo.h"
-#include "drivermgr.h"
+#include "tagmgrtablemodel.h"
+#include "../Interface/Tags/tagmgr.h"
+#include "../Interface/Tags/tag.h"
+#include "../Interface/Drivers/drivermgr.h"
+#include "../Interface/Drivers/idriver.h"
 //#include "PollGroups/pollgroupmgr.h"
 #include <QBrush>
 #include <QString>
 #include <QMap>
 
-static RTData *_pData = nullptr;
-static iDriverMgr* _pDriverMgr = nullptr;
+static TagMgr *_tagMgr = nullptr;
+static DriverConfigMgr* _pDriverMgr = nullptr;
 //static PollGroupMgr* _pPollGroupMgr = nullptr;
 
-int RTDataTableModel::column(int itemName, const QString& driverName)const{
+int TagMgrTableModel::column(int itemName, const QString& driverName)const{
     int accPos=0;
     int itemNo=0;
     int length = 0;
@@ -56,7 +57,7 @@ int RTDataTableModel::column(int itemName, const QString& driverName)const{
     return -1;
 
 }
-bool RTDataTableModel::setValue(TagInfo* t, int column, const QVariant& value){
+bool TagMgrTableModel::setValue(Tag *t, int column, const QVariant& value){
     int partName, itemName;
     QString driverName;
     bool ok=true;
@@ -68,7 +69,7 @@ bool RTDataTableModel::setValue(TagInfo* t, int column, const QVariant& value){
         t->setName( value.toString() );
         return ok;
     case Type:
-        t->setType( value.toInt(&ok) );
+        t->setType( Tag::enumTypeCode(value.toInt(&ok)) );
         return ok;
     case Description:
         t->setDescription( value.toString() );
@@ -82,29 +83,29 @@ bool RTDataTableModel::setValue(TagInfo* t, int column, const QVariant& value){
     case SubSystemName:
         t->setSystemName( value.toString() );
         return ok;
-    case ProjectID:
-        t->setProjectID( value.toInt(&ok) );
-        return ok;
+//    case ProjectID:
+//        t->setProjectID( value.toInt(&ok) );
+//        return ok;
     case ProjecttName:
         t->setProjectName( value.toString() );
         return ok;
-    case StationID:
-        t->setStationID( value.toInt(&ok) );
-        return ok;
+//    case StationID:
+//        t->setStationID( value.toInt(&ok) );
+//        return ok;
     case StationName:
         t->setStationName( value.toString() );
         return ok;
-    case ModuleID:
-        t->setModuleID( value.toInt(&ok) );
-        return ok;
-    case PointID:
-        t->setPointID( value.toInt(&ok) );
-        return ok;
+//    case ModuleID:
+//        t->setModuleID( value.toInt(&ok) );
+//        return ok;
+//    case PointID:
+//        t->setPointID( value.toInt(&ok) );
+//        return ok;
     case Address:
         t->setAddress( value.toString(), driverName );
         return ok;
     case RWStrategy:
-        t->setRWStrategy( value.toInt(&ok), driverName );
+        t->setRWStrategy( Tag::enumRWStrategyCode(value.toInt(&ok)), driverName );
         return ok;
 //    case PollGroup:
 //        t->setPollGroupName( value.toString() );
@@ -122,7 +123,7 @@ bool RTDataTableModel::setValue(TagInfo* t, int column, const QVariant& value){
     return false;
 }
 
-QVariant RTDataTableModel::value(TagInfo *t, int column)const{
+QVariant TagMgrTableModel::value(Tag *t, int column)const{
     int partName, itemName;
     QString driverName;
     getNames(column, &partName, &itemName, &driverName);
@@ -132,7 +133,7 @@ QVariant RTDataTableModel::value(TagInfo *t, int column)const{
     case Name:
         return t->name();
     case Type:
-        return iTagInfo::enumTypeString(t->type());
+        return Tag::enumTypeString(t->type());
     case Description:
         return t->description();
     case Unit:
@@ -141,22 +142,22 @@ QVariant RTDataTableModel::value(TagInfo *t, int column)const{
         return t->extraInfo();
     case SubSystemName:
         return t->systemName();
-    case ProjectID:
-        return t->projectID();
+//    case ProjectID:
+//        return t->projectID();
     case ProjecttName:
         return t->projectName();
-    case StationID:
-        return t->stationID();
+//    case StationID:
+//        return t->stationID();
     case StationName:
         return t->stationName();
-    case ModuleID:
-        return t->moduleID();
-    case PointID:
-        return t->pointID();
+//    case ModuleID:
+//        return t->moduleID();
+//    case PointID:
+//        return t->pointID();
     case Address:
         return t->address(driverName);
     case RWStrategy:
-        return iTagInfo::enumRWStrategyString(t->RWStrategy(driverName));
+        return Tag::enumRWStrategyString(t->RWStrategy(driverName));
 //    case PollGroup:
 //        return t->pollGroupName();
     case Ratio:
@@ -170,7 +171,7 @@ QVariant RTDataTableModel::value(TagInfo *t, int column)const{
     }
     return QVariant();
 }
-QVariant RTDataTableModel::columnName(int column)const{
+QVariant TagMgrTableModel::columnName(int column)const{
     int partName, itemName;
     QString driverName;
     getNames(column, &partName, &itemName, &driverName);
@@ -189,18 +190,18 @@ QVariant RTDataTableModel::columnName(int column)const{
         return tr("备注 ");
     case SubSystemName:
         return tr("子系统名称.");
-    case ProjectID:
-        return tr("项目ID ");
+//    case ProjectID:
+//        return tr("项目ID ");
     case ProjecttName:
         return tr("项目名称 ");
-    case StationID:
-        return tr("站点ID ");
+//    case StationID:
+//        return tr("站点ID ");
     case StationName:
         return tr("站点名称 ");
-    case ModuleID:
-        return tr("模块ID ");
-    case PointID:
-        return tr("通道ID ");
+//    case ModuleID:
+//        return tr("模块ID ");
+//    case PointID:
+//        return tr("通道ID ");
     case Address:
         return tr("%1：地址 ").arg(driverName);
     case RWStrategy:
@@ -219,7 +220,7 @@ QVariant RTDataTableModel::columnName(int column)const{
     return QVariant();
 }
 
-int RTDataTableModel::partLength(int partName)const{
+int TagMgrTableModel::partLength(int partName)const{
     switch (partName) {
     case GENERAL:
         if(partVisible(GENERAL))
@@ -227,7 +228,7 @@ int RTDataTableModel::partLength(int partName)const{
         else return 0;
     case INFO:
         if(partVisible(INFO))
-            return 10;
+            return 6;
         else return 0;
     case DRIVERS:
         if(partVisible(DRIVERS))
@@ -246,7 +247,7 @@ int RTDataTableModel::partLength(int partName)const{
     }
 }
 
-void RTDataTableModel::setPartVisible(int partName, bool visible){
+void TagMgrTableModel::setPartVisible(int partName, bool visible){
     if(partName<0 || partName>=_partsVisibleState.size()) return;
     if(_partsVisibleState[partName] != visible){
         emit layoutAboutToBeChanged();
@@ -256,12 +257,12 @@ void RTDataTableModel::setPartVisible(int partName, bool visible){
     }
 }
 
-bool RTDataTableModel::partVisible(int partName)const{
+bool TagMgrTableModel::partVisible(int partName)const{
     if(partName<0 || partName>=_partsVisibleState.size()) return false;
     return _partsVisibleState[partName];
 }
 
-void RTDataTableModel::getNames(int column, int* partName, int* itemName, QString* driverName)const{
+void TagMgrTableModel::getNames(int column, int* partName, int* itemName, QString* driverName)const{
     int accPos = 0;
     int itemNo=0;
     int length = 0;
@@ -323,20 +324,20 @@ void RTDataTableModel::getNames(int column, int* partName, int* itemName, QStrin
     return;
 }
 
-void RTDataTableModel::driverUpdated(){
+void TagMgrTableModel::driverUpdated(){
     driverNames = _pDriverMgr->driverNames();
     emit updateDelegates();
 }
 
 
-RTDataTableModel::RTDataTableModel(QObject *parent):QAbstractTableModel(parent)
+TagMgrTableModel::TagMgrTableModel(QObject *parent):QAbstractTableModel(parent)
 {
-    _pData = RTData::Instance();
-    connect(_pData,&RTData::beginResetModel, this, &RTDataTableModel::beginResetModel);
-    connect(_pData,&RTData::endResetModel,   this, &RTDataTableModel::endResetModel);
+    _tagMgr = TagMgr::Instance();
+    connect(_tagMgr,&TagMgr::beginResetModel, this, &TagMgrTableModel::beginResetModel);
+    connect(_tagMgr,&TagMgr::endResetModel,   this, &TagMgrTableModel::endResetModel);
 
-    _pDriverMgr = DriverMgr::Instance();
-    connect(_pDriverMgr,&iDriverMgr::driverListChanged, this, &RTDataTableModel::driverUpdated);
+    _pDriverMgr = DriverConfigMgr::Instance();
+    connect(_pDriverMgr,&DriverConfigMgr::driverListChanged, this, &TagMgrTableModel::driverUpdated);
     driverNames = _pDriverMgr->driverNames();
 
 //    _pPollGroupMgr = PollGroupMgr::Instance();
@@ -345,13 +346,13 @@ RTDataTableModel::RTDataTableModel(QObject *parent):QAbstractTableModel(parent)
 }
 
 
-int RTDataTableModel::rowCount(const QModelIndex &parent) const{
+int TagMgrTableModel::rowCount(const QModelIndex &parent) const{
     if (parent.isValid())
         return 0;
-    return _pData->_tags.size();
+    return _tagMgr->tagList().size();
 }
 
-int RTDataTableModel::columnCount(const QModelIndex &parent) const{
+int TagMgrTableModel::columnCount(const QModelIndex &parent) const{
     if (parent.isValid())
         return 0;
     return partLength(GENERAL)+
@@ -361,24 +362,24 @@ int RTDataTableModel::columnCount(const QModelIndex &parent) const{
             partLength(ONLINESTATE);
 }
 
-QVariant RTDataTableModel::data(const QModelIndex &index, int role) const{
+QVariant TagMgrTableModel::data(const QModelIndex &index, int role) const{
     if(!index.isValid()){
         return QVariant();
     }
-    if(index.row()<0 || index.row()>=_pData->_tags.size() ) return QVariant();
+    if(index.row()<0 || index.row()>=_tagMgr->tagList().size() ) return QVariant();
 
     int partName, itemName;
     QString driverName;
     int row = index.row();
     int column = index.column();
     getNames(column, &partName, &itemName, &driverName);
-    TagInfo* t = _pData->_tags.at(row);
+    Tag* t = _tagMgr->tagList().at(row);
     if(t == nullptr) return QVariant();
 
     if(role == Qt::ToolTipRole){
         //judge name conflict
         if( itemName == Name){
-            if(_pData->contains( t->name(), t ) ){
+            if(_tagMgr->contains( t->name(), t ) ){
                 return tr("Name conflict!");
             }
         }
@@ -411,7 +412,7 @@ QVariant RTDataTableModel::data(const QModelIndex &index, int role) const{
         }
         //judge name conflict
         if( itemName == Name){
-            if(_pData->contains( t->name(), t ) ){
+            if(_tagMgr->contains( t->name(), t ) ){
                 brush.setColor( QColor(255,69,0,100) );
             }
         }
@@ -439,7 +440,7 @@ QVariant RTDataTableModel::data(const QModelIndex &index, int role) const{
     }else if(role == Qt::TextAlignmentRole){
         return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
     }else if(role == Qt::DisplayRole || role ==Qt::EditRole ){
-        return value(t,column);
+        return value(t, column);
     }else if(role == Qt::UserRole){
         //store tagName in first column as user role
         //let related delegates be easily informed.
@@ -450,7 +451,7 @@ QVariant RTDataTableModel::data(const QModelIndex &index, int role) const{
     return QVariant();
 }
 
-QVariant RTDataTableModel::headerData(int section, Qt::Orientation orientation, int role) const{
+QVariant TagMgrTableModel::headerData(int section, Qt::Orientation orientation, int role) const{
     if(role == Qt::TextAlignmentRole){
         return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
     }else if(role == Qt::DisplayRole ){
@@ -463,43 +464,43 @@ QVariant RTDataTableModel::headerData(int section, Qt::Orientation orientation, 
     return QVariant();
 }
 
-bool RTDataTableModel::setData(const QModelIndex &index, const QVariant &value, int role){
+bool TagMgrTableModel::setData(const QModelIndex &index, const QVariant &value, int role){
     if(!index.isValid()){
         return false;
     }
     if (data(index, role) != value) {
-        if(index.row()<0 || index.row()>=_pData->_tags.size() ) return false;
-        TagInfo* t =  _pData->_tags.at( index.row() );
+        if(index.row()<0 || index.row()>=_tagMgr->tagList().size() ) return false;
+        Tag* t =  _tagMgr->tagList().at( index.row() );
         if(t == nullptr) return false;
         return setValue(t,index.column(),value);
     }
     return false;
 }
 
-Qt::ItemFlags RTDataTableModel::flags(const QModelIndex &index) const{
+Qt::ItemFlags TagMgrTableModel::flags(const QModelIndex &index) const{
     if (!index.isValid())
-        return 0;
+        return Qt::NoItemFlags;
     if( column(Value) == index.column() || column(LastUpdateTimes) == index.column())
         return Qt::ItemIsEnabled;
     else
         return Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable;
 }
 
-bool RTDataTableModel::insertRows(int row, int count, const QModelIndex &parent){
+bool TagMgrTableModel::insertRows(int row, int count, const QModelIndex &parent){
     if(row<0) row=0;
     beginInsertRows(parent, row, row + count - 1);
-    for(int i=0; i<count&&i<=_pData->_tags.length(); ++i){
-        _pData->insertTagInfo(row);
+    for(int i=0; i<count&&i<=_tagMgr->tagList().length(); ++i){
+        _tagMgr->insertTag(QString(), row);
     }
     endInsertRows();
     return true;
 }
 
-bool RTDataTableModel::removeRows(int row, int count, const QModelIndex &parent){
+bool TagMgrTableModel::removeRows(int row, int count, const QModelIndex &parent){
     if(row<0) row=0;
     beginRemoveRows(parent, row, row + count - 1);
-    for(int i=0; i<count&&i<_pData->_tags.length(); ++i){
-        _pData->removeTagInfo(row);
+    for(int i=0; i<count&&i<_tagMgr->tagList().length(); ++i){
+        _tagMgr->removeTag(row);
     }
     endRemoveRows();
     return true;
@@ -534,7 +535,7 @@ bool itemGreaterThan(const QPair<QVariant,int> &left,
     return left.first > right.first;
 }
 
-void RTDataTableModel::sort(int column, Qt::SortOrder order){
+void TagMgrTableModel::sort(int column, Qt::SortOrder order){
     QVector<QPair<QVariant, int> > sortable;
     QVector<int> unsortable;
 
@@ -556,26 +557,26 @@ void RTDataTableModel::sort(int column, Qt::SortOrder order){
     LessThan compare = (order == Qt::AscendingOrder ? &itemLessThan : &itemGreaterThan);
     std::stable_sort(sortable.begin(), sortable.end(), compare);
 
-    QList<TagInfo*>  temp_data;
+    QList<Tag*>  temp_data;
     temp_data.reserve( rowCount() );
     emit layoutAboutToBeChanged();
     int nSwapCount=rowCount();
     for(int i=0;i<nSwapCount;i++){
         int r = (i < sortable.count()?
                      sortable.at(i).second : unsortable.at(i - sortable.count()));
-        temp_data.append( _pData->_tags.at(r) );
+        temp_data.append( _tagMgr->tagList().at(r) );
     }
-    _pData->_tags.clear();
-    _pData->_tags = temp_data;
+    _tagMgr->tagList().clear();
+    _tagMgr->tagList() = temp_data;
     emit layoutChanged();
 }
 
-QList<int> RTDataTableModel::errorRows(){
+QList<int> TagMgrTableModel::errorRows(){
     QList<int> ret;
-    for( int i=0; i<_pData->_tags.size(); i++){
-        iTagInfo* t = _pData->_tags.at(i);
+    for( int i=0; i<_tagMgr->tagList().size(); i++){
+        Tag* t = _tagMgr->tagList().at(i);
         //judge name conflict
-        if(_pData->contains(t->name(), t)){
+        if(_tagMgr->contains(t->name(), t)){
             ret<<i;
             continue;
         }
@@ -607,7 +608,7 @@ QList<int> RTDataTableModel::errorRows(){
 ////////////////////////////////data general part
 //static const QStringList headDataGeneralPart = (QStringList()<<QObject::tr("名称")<<QObject::tr("描述")
 //                                                <<QObject::tr("备注")<<QObject::tr("数据类型"));
-//static QVariant dataGeneralPart(TagInfo* t, int pos){
+//static QVariant dataGeneralPart(Tag* t, int pos){
 //    switch(pos){
 //    case 0:
 //        return QVariant(t->name());
@@ -616,12 +617,12 @@ QList<int> RTDataTableModel::errorRows(){
 //    case 2:
 //        return QVariant(t->extraInfo());
 //    case 3:
-//        return QVariant(TagInfo::enumTypeString(t->type() ));
+//        return QVariant(Tag::enumTypeString(t->type() ));
 //    default:
 //        return QVariant();
 //    }
 //}
-//static void setDataGeneralPart(TagInfo* t, int pos, const QVariant& data){
+//static void setDataGeneralPart(Tag* t, int pos, const QVariant& data){
 //    switch(pos){
 //    case 0:
 //        t->setName(data.toString());
@@ -642,7 +643,7 @@ QList<int> RTDataTableModel::errorRows(){
 //                                                <<QObject::tr("项目ID")<<QObject::tr("项目名称")
 //                                                <<QObject::tr("站点ID")<<QObject::tr("站点名称")
 //                                                <<QObject::tr("模块ID")<<QObject::tr("通道ID"));
-//static QVariant dataInfoPart(TagInfo* t, int pos){
+//static QVariant dataInfoPart(Tag* t, int pos){
 //    switch(pos){
 //    case 0:
 //        return QVariant(t->systemName());
@@ -664,7 +665,7 @@ QList<int> RTDataTableModel::errorRows(){
 //        return QVariant();
 //    }
 //}
-//static void setDataInfoPart(TagInfo* t, int pos, const QVariant& data){
+//static void setDataInfoPart(Tag* t, int pos, const QVariant& data){
 //    switch(pos){
 //    case 0:
 //        t->setSystemName(data.toString());
@@ -694,7 +695,7 @@ QList<int> RTDataTableModel::errorRows(){
 //}
 ///////////////////////////////data process part
 //static const QStringList headDataDataProcessPart = (QStringList()<<QObject::tr("轮询组")<<QObject::tr("阶码"));
-//static QVariant dataDataProcessPart(TagInfo* t, int pos){
+//static QVariant dataDataProcessPart(Tag* t, int pos){
 //    switch(pos){
 //    case 0:
 //        return QVariant(t->pollGroupName());
@@ -704,7 +705,7 @@ QList<int> RTDataTableModel::errorRows(){
 //        return QVariant();
 //    }
 //}
-//static void setDataDataProcessPart(TagInfo* t, int pos, const QVariant& data){
+//static void setDataDataProcessPart(Tag* t, int pos, const QVariant& data){
 //    switch(pos){
 //    case 0:
 //        t->setPollGroupName(data.toString());
@@ -716,7 +717,7 @@ QList<int> RTDataTableModel::errorRows(){
 //}
 ////////////////////////data online state part
 //static const QStringList headDataOnlineStatePart = (QStringList()<<QObject::tr("值")<<QObject::tr("最后更新时间"));
-//static QVariant dataOnlineStatePart(TagInfo* t, int pos){
+//static QVariant dataOnlineStatePart(Tag* t, int pos){
 //    switch(pos){
 //    case 0:
 //        return t->value();
@@ -726,24 +727,24 @@ QList<int> RTDataTableModel::errorRows(){
 //        return QVariant();
 //    }
 //}
-//static void setDataOnlineStatePart(TagInfo* t, int pos, const QVariant& data){
+//static void setDataOnlineStatePart(Tag* t, int pos, const QVariant& data){
 //    Q_UNUSED(t)
 //    Q_UNUSED(pos)
 //    Q_UNUSED(data)
 //}
 //////////////////////data address part
 //static const QStringList headDataAddressPart = (QStringList()<<QObject::tr("地址")<<QObject::tr("数据类型"));
-//static QVariant dataAddressPart(TagInfo* t, const QString& driverName, int pos){
+//static QVariant dataAddressPart(Tag* t, const QString& driverName, int pos){
 //    switch(pos){
 //    case 0:
 //        return QVariant(t->address(driverName) );
 //    case 1:
-//        return QVariant(TagInfo::enumTypeString(t->RWStrategy(driverName)));
+//        return QVariant(Tag::enumTypeString(t->RWStrategy(driverName)));
 //    default:
 //        return QVariant();
 //    }
 //}
-//static void setDataAddressPart(TagInfo* t, const QString& driverName, int pos, const QVariant& data){
+//static void setDataAddressPart(Tag* t, const QString& driverName, int pos, const QVariant& data){
 //    switch(pos){
 //    case 0:
 //        t->setAddress(data.toString(), driverName);

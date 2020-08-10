@@ -1,14 +1,9 @@
 import QtQml 2.0
-import "../qmlTagInterface"
 
 QtObject {
-    property string driverName;
-    property string driverType;
-    property string driverManufacturer;
-    property string description;
-    property string majorVersion;
-    property string minorVersion;
-    property string microVersion;
+
+    property string driverName: ""
+    property DriverInfo driverinfo: DriverInfo{}
 
     enum EnumStates{
         STAT_ABOUT_TO_RUN,

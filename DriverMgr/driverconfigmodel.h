@@ -1,14 +1,14 @@
-#ifndef DRIVERMODEL_H
-#define DRIVERMODEL_H
+#ifndef DRIVERCONFIGMODEL_H
+#define DRIVERCONFIGMODEL_H
 
 #include <QAbstractTableModel>
 
-class DriverModel : public QAbstractTableModel
+class DriverConfigModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
-    explicit DriverModel(QObject *parent = nullptr);
+    explicit DriverConfigModel(QObject *parent = nullptr);
 
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
@@ -28,12 +28,8 @@ public:
 public:
     //return error rows' index;
     QList<int> errorRows();
-    int startDriver(int row);
-    int stopDriver(int row);
-    void startAllDriver(void);
-    void stopAllDriver(void);
     void showConfigUI(QModelIndex index);
 private:
 };
 
-#endif // DRIVERMODEL_H
+#endif // DRIVERCONFIGMODEL_H

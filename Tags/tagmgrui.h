@@ -1,42 +1,42 @@
-#ifndef RTDataUI_H
-#define RTDataUI_H
+#ifndef TAGMGRUI_H
+#define TAGMGRUI_H
 
 #include <QWidget>
 #include <QHideEvent>
-#include "rtdatatablemodel.h"
+#include "tagmgrtablemodel.h"
 
 class PollGroupMgr;
 
 namespace Ui {
-class RTDataUI;
+class TagMgrUI;
 }
 
-class RTDataUI : public QWidget
+class TagMgrUI : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit RTDataUI(QAbstractTableModel *model, QWidget *parent = 0);
-    ~RTDataUI();
+    explicit TagMgrUI(QAbstractTableModel *model, QWidget *parent = 0);
+    ~TagMgrUI();
 
 private slots:
-    void on_pbLoad_clicked();
-    void on_pbClose_clicked();
-    void on_pbDelete_clicked();
     void on_pbAdd_clicked();
+    void on_pbDelete_clicked();
+    void on_pbLoad_clicked();
+    void on_pbSave_clicked();
+
     void updateDelegates();
 
     void on_cbInfo_toggled(bool checked);
-
     void on_cbScale_toggled(bool checked);
-
     void on_cbOnlineState_toggled(bool checked);
 
 //    void on_pushButton_clicked();
+
 private:
-    Ui::RTDataUI *ui;
-    RTDataTableModel* _pModel;
+    Ui::TagMgrUI *ui;
+    TagMgrTableModel* _pModel;
 //    PollGroupMgr* _pPollGroupMgr;
 };
 
-#endif // RTDataUI_H
+#endif // TAGMGRUI_H

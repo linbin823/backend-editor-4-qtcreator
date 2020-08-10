@@ -2,8 +2,8 @@
 #include "ui_backendeditormodemainwidget.h"
 #include "backendeditorcreatewizard.h"
 #include "backendeditorconstants.h"
-#include "RTData/rtdata.h"
-#include "DriverMgr/drivermgr.h"
+#include "Interface/Tags/tagmgr.h"
+#include "Interface/Drivers/drivermgr.h"
 
 #include <projectexplorer/projecttree.h>
 #include <projectexplorer/buildsystem.h>
@@ -28,10 +28,10 @@ BackendEditorModeMainWidget::BackendEditorModeMainWidget(QWidget *parent) :
     setLayout(ui->formLayout);
 
     ui->driversConfigEditor->setLayout(ui->driversLayout);
-    ui->driversLayout->addWidget(DriverMgr::Instance()->showUI());
+    ui->driversLayout->addWidget(DriverConfigMgr::Instance()->showUI());
 
     ui->tagsConfigEditor->setLayout(ui->tagsLayout);
-    ui->tagsLayout->addWidget(RTData::Instance()->showUI());
+    ui->tagsLayout->addWidget(TagMgr::Instance()->showUI());
 
     parseConfigFile();
 }

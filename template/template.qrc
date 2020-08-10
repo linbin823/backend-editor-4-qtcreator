@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>backend/DriversInterface/DriverInfo.qml</file>
+        <file>backend/DriversInterface/DriverRuntime.qml</file>
+        <file>backend/DriversInterface/DriversRuntimeMgr.qml</file>
+        <file>backend/SimDriverRuntime/Counter.qml</file>
+        <file>backend/SimDriverRuntime/SimDriver.qml</file>
+        <file>backend/TagsInterface/Tag.qml</file>
+        <file>backend/TagsInterface/TagAddress.qml</file>
+        <file>backend/TagsInterface/TagsMgr.qml</file>
+        <file>backend/DriversConfig.qml</file>
+        <file>backend/qmldir</file>
+        <file>backend/TagsConfig.qml</file>
+    </qresource>
+</RCC>
