@@ -1,5 +1,4 @@
-#include "backendeditorfactory.h"
-#include "backendeditormodemainwidget.h"
+#include "befactory.h"
 #include "backendeditorconstants.h"
 
 #include <coreplugin/coreconstants.h>
@@ -16,7 +15,7 @@ using namespace BackendEditor::Constants;
 namespace BackendEditor {
 namespace Internal {
 
-BackendEditorFactory::BackendEditorFactory() : QmlJSEditor::QmlJSEditorFactory(Constants::BACKEND_EDITOR_ID)
+BEFactory::BEFactory() : QmlJSEditor::QmlJSEditorFactory(Constants::BACKEND_EDITOR_ID)
 {
     setId(BACKEND_EDITOR_ID);
     setDisplayName(QCoreApplication::translate("BackendEditor", BACKEND_EDITOR_NAME));

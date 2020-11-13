@@ -5,7 +5,7 @@
 #include <utils/id.h>
 
 namespace Ui {
-class BackendEditorModeMainWidget;
+class ModeMainWidget;
 }// namespace Ui
 
 namespace QmlDesigner {
@@ -15,13 +15,13 @@ class Model;
 namespace BackendEditor {
 namespace Internal {
 
-class BackendEditorModeMainWidget : public QWidget
+class ModeMainWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit BackendEditorModeMainWidget(QWidget *parent = nullptr);
-    ~BackendEditorModeMainWidget();
+    explicit ModeMainWidget(QWidget *parent = nullptr);
+    ~ModeMainWidget();
 
     void setActivePage(Utils::Id pageId);
 
@@ -32,7 +32,7 @@ private slots:
     void on_pbCreateTemplate_clicked();
 
 private:
-    Ui::BackendEditorModeMainWidget *ui;
+    Ui::ModeMainWidget *ui;
     QmlDesigner::Model *_pDriversModel, *_pTagsModel;
 };
 

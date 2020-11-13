@@ -1,5 +1,5 @@
-#ifndef MODEBACKENDCREATEWIZARD_H
-#define MODEBACKENDCREATEWIZARD_H
+#ifndef CREATEWIZARD_H
+#define CREATEWIZARD_H
 
 #include <utils/fileutils.h>
 #include <utils/id.h>
@@ -10,12 +10,12 @@ namespace ProjectExplorer { class BuildSystem; }
 namespace BackendEditor {
 namespace Internal {
 
-class BackendEditorCreateWizard : public Utils::Wizard
+class CreateWizard : public Utils::Wizard
 {
     Q_DECLARE_TR_FUNCTIONS(BackendEditor::ModeBackendCreateWizard)
 
 public:
-    BackendEditorCreateWizard(ProjectExplorer::BuildSystem *buildSystem);
+    CreateWizard(ProjectExplorer::BuildSystem *buildSystem);
 
     QString buildKey() const;
     void setBuildKey(const QString &buildKey);
@@ -53,4 +53,4 @@ private:
 } // namespace Internal
 } // namespace BackendEditor
 
-#endif // MODEBACKENDCREATEWIZARD_H
+#endif // CREATEWIZARD_H

@@ -1,5 +1,5 @@
-#include "backendeditormode.h"
-#include "backendeditormodemainwidget.h"
+#include "bemode.h"
+#include "modewidgets/modemainwidget.h"
 #include "backendeditoricons.h"
 #include "backendeditorconstants.h"
 
@@ -12,10 +12,10 @@
 namespace BackendEditor {
 namespace Internal {
 
-BackendEditorMode::BackendEditorMode(QObject *parent)
+BEMode::BEMode(QObject *parent)
 {
     Q_UNUSED(parent)
-    mainWidget = new BackendEditorModeMainWidget(nullptr);
+    mainWidget = new ModeMainWidget(nullptr);
 
     setWidget(mainWidget);
 
@@ -37,7 +37,7 @@ BackendEditorMode::BackendEditorMode(QObject *parent)
             });
 }
 
-BackendEditorMode::~BackendEditorMode()
+BEMode::~BEMode()
 {
     mainWidget->deleteLater();
     Core::ModeManager::activateMode(Constants::ID_MODE_BACKEND);

@@ -1,5 +1,5 @@
-﻿#include "backendeditorcreatewizard.h"
-#include "backendeditorconstants.h"
+﻿#include "createwizard.h"
+#include "../backendeditorconstants.h"
 #include <coreplugin/editormanager/editormanager.h>
 
 #include <projectexplorer/buildsystem.h>
@@ -46,10 +46,10 @@ class CanNotCreateTemplatePage : public QWizardPage
     Q_DECLARE_TR_FUNCTIONS(BackendEditor::CanNotCreateTemplatePage)
 
 public:
-    CanNotCreateTemplatePage(BackendEditorCreateWizard *wizard);
+    CanNotCreateTemplatePage(CreateWizard *wizard);
 };
 
-CanNotCreateTemplatePage::CanNotCreateTemplatePage(BackendEditorCreateWizard *)
+CanNotCreateTemplatePage::CanNotCreateTemplatePage(CreateWizard *)
 {
     auto layout = new QVBoxLayout(this);
     auto label = new QLabel(this);
@@ -69,16 +69,16 @@ class ChooseProFilePage : public QWizardPage
     Q_DECLARE_TR_FUNCTIONS(BackendEditor::ChooseProfilePage)
 
 public:
-    explicit ChooseProFilePage(BackendEditorCreateWizard *wizard);
+    explicit ChooseProFilePage(CreateWizard *wizard);
 
 private:
     void nodeSelected(int index);
 
-    BackendEditorCreateWizard *m_wizard;
+    CreateWizard *m_wizard;
     QComboBox *m_comboBox;
 };
 
-ChooseProFilePage::ChooseProFilePage(BackendEditorCreateWizard *wizard)
+ChooseProFilePage::ChooseProFilePage(CreateWizard *wizard)
     : m_wizard(wizard)
 {
     auto fl = new QFormLayout(this);
@@ -122,14 +122,14 @@ class ChooseDirectoryPage : public QWizardPage
     Q_DECLARE_TR_FUNCTIONS(BackendEditor::ChooseDirectoryPage)
 
 public:
-    ChooseDirectoryPage(BackendEditorCreateWizard *wizard);
+    ChooseDirectoryPage(CreateWizard *wizard);
 
 private:
     void initializePage();
     bool isComplete() const;
     void checkPackageSourceDir();
 
-    BackendEditorCreateWizard *m_wizard;
+    CreateWizard *m_wizard;
     PathChooser *m_backendTemplateDir = nullptr;
     InfoLabel *m_sourceDirectoryWarning = nullptr;
     QLabel *m_label;
@@ -137,7 +137,7 @@ private:
     bool m_complete = true;
 };
 
-ChooseDirectoryPage::ChooseDirectoryPage(BackendEditorCreateWizard *wizard)
+ChooseDirectoryPage::ChooseDirectoryPage(CreateWizard *wizard)
     : m_wizard(wizard)
 {
     m_layout = new QFormLayout(this);
@@ -157,7 +157,7 @@ ChooseDirectoryPage::ChooseDirectoryPage(BackendEditorCreateWizard *wizard)
     m_layout->addRow(m_sourceDirectoryWarning);
 
     connect(m_backendTemplateDir, &PathChooser::pathChanged,
-            m_wizard, &BackendEditorCreateWizard::setDirectory);
+            m_wizard, &CreateWizard::setDirectory);
 }
 
 void ChooseDirectoryPage::checkPackageSourceDir()
@@ -210,9 +210,9 @@ void ChooseDirectoryPage::initializePage()
 }
 
 //
-// BackendEditorCreateWizard
+// CreateWizard
 //
-BackendEditorCreateWizard::BackendEditorCreateWizard(BuildSystem *buildSystem)
+CreateWizard::CreateWizard(BuildSystem *buildSystem)
     : m_buildSystem(buildSystem), m_copyState(Ask)
 {
     setWindowTitle(tr("添加后端模板文件向导"));
@@ -242,22 +242,22 @@ BackendEditorCreateWizard::BackendEditorCreateWizard(BuildSystem *buildSystem)
     }
 }
 
-QString BackendEditorCreateWizard::buildKey() const
+QString CreateWizard::buildKey() const
 {
     return m_buildKey;
 }
 
-void BackendEditorCreateWizard::setBuildKey(const QString &buildKey)
+void CreateWizard::setBuildKey(const QString &buildKey)
 {
     m_buildKey = buildKey;
 }
 
-void BackendEditorCreateWizard::setDirectory(const QString &directory)
+void CreateWizard::setDirectory(const QString &directory)
 {
     m_directory = directory;
 }
 
-bool BackendEditorCreateWizard::copy(const QFileInfo &src, const QFileInfo &dst, QStringList * addedFiles)
+bool CreateWizard::copy(const QFileInfo &src, const QFileInfo &dst, QStringList * addedFiles)
 {
     bool copyState_onetime = true;
     if (dst.exists()) {
@@ -334,7 +334,7 @@ bool BackendEditorCreateWizard::copy(const QFileInfo &src, const QFileInfo &dst,
     return true;
 }
 
-void BackendEditorCreateWizard::createBackendTemplateFiles()
+void CreateWizard::createBackendTemplateFiles()
 {
     if (m_directory.isEmpty())
         return;
@@ -395,12 +395,12 @@ void BackendEditorCreateWizard::createBackendTemplateFiles()
 //    Core::EditorManager::openEditor(m_directory + QLatin1String("/AndroidManifest.xml"));
 }
 
-BuildSystem *BackendEditorCreateWizard::buildSystem() const
+BuildSystem *CreateWizard::buildSystem() const
 {
     return m_buildSystem;
 }
 
-void BackendEditorCreateWizard::accept()
+void CreateWizard::accept()
 {
     createBackendTemplateFiles();
     Wizard::accept();

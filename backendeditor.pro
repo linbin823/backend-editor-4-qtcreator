@@ -5,21 +5,21 @@ Qt += widgets xml
 # backendEditor files
 
 SOURCES += \
-        backendeditorcreatewizard.cpp \
-        backendeditorfactory.cpp \
-        backendeditormode.cpp \
-        backendeditormodemainwidget.cpp \
-        backendeditorplugin.cpp
+        befactory.cpp \
+        bemode.cpp \
+        backendeditorplugin.cpp \
+        modewidgets/createwizard.cpp \
+        modewidgets/modemainwidget.cpp
 
 HEADERS += \
+        befactory.h \
+        bemode.h \
         backendeditor_global.h \
         backendeditorconstants.h \
-        backendeditorcreatewizard.h \
-        backendeditorfactory.h \
         backendeditoricons.h \
-        backendeditormode.h \
-        backendeditormodemainwidget.h \
-        backendeditorplugin.h
+        backendeditorplugin.h \
+        modewidgets/createwizard.h \
+        modewidgets/modemainwidget.h
 
 DISTFILES += \
         .github/workflows/c-cpp.yml \
@@ -27,7 +27,7 @@ DISTFILES += \
         BackendEditor.json
 
 FORMS += \
-    backendeditormodemainwidget.ui
+    modewidgets/modemainwidget.ui
 
 RESOURCES += \
     backendeditor.qrc \
@@ -61,10 +61,10 @@ message(IDE_SOURCE_TREE: $$IDE_SOURCE_TREE)
 ## or set the QTC_BUILD environment variable, to override the default setting
 isEmpty(IDE_BUILD_TREE): IDE_BUILD_TREE = $$(QTC_BUILD)
 isEmpty(IDE_BUILD_TREE):CONFIG(debug, debug|release) {
-    IDE_BUILD_TREE = "D:/QtGit/work/qt5.15_msvc2019_64bit_debug/"
+    IDE_BUILD_TREE = "D:\QtGit\work\qtc414_qt515_msvc2019_64bit_debug·"
     message("Debug model, IDE_BUILD_TREE: "$$IDE_BUILD_TREE)
 }else {
-    IDE_BUILD_TREE = "D:/QtGit/work/qt5.15_msvc2019_64bit/"
+    IDE_BUILD_TREE = "D:\QtGit\work\qtc414_qt515_msvc2019_64bit"
     message("Release model, IDE_BUILD_TREE: "$$IDE_BUILD_TREE)
 }
 
@@ -75,28 +75,5 @@ isEmpty(IDE_BUILD_TREE):CONFIG(debug, debug|release) {
 ##    "$XDG_DATA_HOME/data/QtProject/qtcreator" or "~/.local/share/data/QtProject/qtcreator" on Linux
 ##    "~/Library/Application Support/QtProject/Qt Creator" on OS X
 #USE_USER_DESTDIR = yes
-
-###### If the plugin can be depended upon by other plugins, this code needs to be outsourced to
-###### <dirname>_dependencies.pri, where <dirname> is the name of the directory containing the
-###### plugin's sources.
-
-QTC_PLUGIN_NAME = BackendEditor
-QTC_LIB_DEPENDS += \
-    # nothing here at this time
-
-QTC_PLUGIN_DEPENDS += \
-    coreplugin \
-    projectexplorer \
-    qtsupport \
-    CMakeProjectManager \
-    QmlProjectManager \
-    QmakeProjectManager \
-    QmlJSEditor \
-    QmlDesigner
-
-QTC_PLUGIN_RECOMMENDS +=  \
-
-
-###### End _dependencies.pri contents ######
 
 include($$IDE_SOURCE_TREE/src/qtcreatorplugin.pri)

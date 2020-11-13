@@ -1,7 +1,7 @@
 #include "backendeditorplugin.h"
 #include "backendeditorconstants.h"
-#include "backendeditormode.h"
-#include "backendeditorfactory.h"
+#include "bemode.h"
+#include "befactory.h"
 
 #include <coreplugin/icore.h>
 #include <coreplugin/icontext.h>
@@ -52,9 +52,9 @@ bool BackendEditorPlugin::initialize(const QStringList &arguments, QString *erro
 //    menu->addAction(cmd);
 //    Core::ActionManager::actionContainer(Core::Constants::M_TOOLS)->addMenu(menu);
 
-    BackendEditorMode *pMode = new BackendEditorMode(this);
+    BEMode *pMode = new BEMode(this);
     Q_UNUSED(pMode)
-    BackendEditorFactory *pFactory = new BackendEditorFactory();
+    BEFactory *pFactory = new BEFactory();
     Q_UNUSED(pFactory)
     return true;
 }

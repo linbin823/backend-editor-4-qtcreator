@@ -1,9 +1,9 @@
-#include "backendeditormodemainwidget.h"
-#include "ui_backendeditormodemainwidget.h"
-#include "backendeditorcreatewizard.h"
-#include "backendeditorconstants.h"
-#include "Interface/Tags/tagmgr.h"
-#include "Interface/Drivers/drivermgr.h"
+#include "modemainwidget.h"
+#include "ui_modemainwidget.h"
+#include "createwizard.h"
+#include "../backendeditorconstants.h"
+#include "../Interface/Tags/tagmgr.h"
+#include "../Interface/Drivers/drivermgr.h"
 
 #include <projectexplorer/projecttree.h>
 #include <projectexplorer/buildsystem.h>
@@ -18,9 +18,9 @@
 namespace BackendEditor {
 namespace Internal {
 
-BackendEditorModeMainWidget::BackendEditorModeMainWidget(QWidget *parent) :
+ModeMainWidget::ModeMainWidget(QWidget *parent) :
       QWidget(parent),
-      ui(new Ui::BackendEditorModeMainWidget),
+      ui(new Ui::ModeMainWidget),
       _pDriversModel(QmlDesigner::Model::create("")),
       _pTagsModel(nullptr)
 {
@@ -36,12 +36,12 @@ BackendEditorModeMainWidget::BackendEditorModeMainWidget(QWidget *parent) :
     parseConfigFile();
 }
 
-BackendEditorModeMainWidget::~BackendEditorModeMainWidget()
+ModeMainWidget::~ModeMainWidget()
 {
     delete ui;
 }
 
-void BackendEditorModeMainWidget::setActivePage(Utils::Id pageId)
+void ModeMainWidget::setActivePage(Utils::Id pageId)
 {
     if (pageId == Utils::Id(Constants::DRIVERS_CONFIG_EDITOR_ID)) {
         ui->twConfigEditorsArea->setCurrentWidget(ui->driversConfigEditor);
@@ -51,7 +51,7 @@ void BackendEditorModeMainWidget::setActivePage(Utils::Id pageId)
     }
 }
 
-void BackendEditorModeMainWidget::parseConfigFile()
+void ModeMainWidget::parseConfigFile()
 {
     ProjectExplorer::BuildSystem* bs = ProjectExplorer::ProjectTree::currentBuildSystem();
     if(bs == nullptr) { return; }
@@ -70,12 +70,12 @@ void BackendEditorModeMainWidget::parseConfigFile()
     //    ModelNode* rootNode = _pDriversModel->
 }
 
-void BackendEditorModeMainWidget::on_pbCreateTemplate_clicked()
+void ModeMainWidget::on_pbCreateTemplate_clicked()
 {
     ProjectExplorer::BuildSystem* bs = ProjectExplorer::ProjectTree::currentBuildSystem();
     if(bs == nullptr) { return; }
 
-    BackendEditorCreateWizard wizard(bs);
+    CreateWizard wizard(bs);
     wizard.exec();
 
     parseConfigFile();
